@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5. Evaluate — Probabilità Condizionata & Bayes</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #0a0e27; --card-bg: rgba(255,255,255,0.05); --cyan: #00f0ff; --magenta: #ff00e5; --yellow: #ffe600; --green: #00ff88; --orange: #ff6b35; --purple: #a855f7; --text: #e0e6ff; --text-dim: #8892b0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+        .nav-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10,14,39,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-bar .phase-label { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: var(--yellow); font-weight: 700; }
+        .nav-bar a { color: var(--text-dim); text-decoration: none; font-size: 0.85rem; }
+        .nav-bar a:hover { color: var(--cyan); }
+        .container { max-width: 900px; margin: 0 auto; padding: 80px 20px 40px; }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 900; text-align: center; margin-bottom: 10px; background: linear-gradient(135deg, var(--yellow), var(--orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .subtitle { text-align: center; color: var(--text-dim); margin-bottom: 40px; }
+
+        .card { background: var(--card-bg); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); padding: 30px; margin-bottom: 25px; }
+        .card h2 { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; margin-bottom: 20px; color: var(--yellow); }
+        .card p { color: var(--text-dim); line-height: 1.8; margin-bottom: 10px; }
+
+        .score-display { text-align: center; padding: 30px; background: rgba(255,230,0,0.05); border: 2px solid rgba(255,230,0,0.2); border-radius: 16px; margin-bottom: 25px; }
+        .score-display .score { font-family: 'Orbitron', sans-serif; font-size: 3rem; font-weight: 900; color: var(--yellow); }
+        .score-display .score-label { color: var(--text-dim); margin-top: 5px; }
+        .score-display .score-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 15px; overflow: hidden; }
+        .score-display .score-fill { height: 100%; background: linear-gradient(90deg, var(--orange), var(--yellow), var(--green)); border-radius: 4px; transition: width 0.5s; }
+
+        .question { margin-bottom: 30px; padding: 25px; background: rgba(255,255,255,0.02); border-radius: 14px; border: 1px solid rgba(255,255,255,0.06); }
+        .question .q-num { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; color: var(--cyan); margin-bottom: 10px; }
+        .question .q-text { font-size: 1rem; color: var(--text); line-height: 1.7; margin-bottom: 15px; }
+        .question .q-text .math { color: var(--yellow); font-family: 'Georgia', serif; }
+        .question .options { display: flex; flex-direction: column; gap: 8px; }
+        .option-btn {
+            padding: 12px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.03); color: var(--text-dim); cursor: pointer;
+            font-family: 'Inter', sans-serif; font-size: 0.9rem; text-align: left; transition: all 0.3s;
+        }
+        .option-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); }
+        .option-btn.correct { background: rgba(0,255,136,0.15); border-color: var(--green); color: var(--green); }
+        .option-btn.wrong { background: rgba(255,107,53,0.15); border-color: var(--orange); color: var(--orange); }
+        .option-btn.disabled { pointer-events: none; opacity: 0.6; }
+        .question .feedback { margin-top: 12px; padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; line-height: 1.6; display: none; }
+        .feedback.correct-fb { background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.2); color: var(--green); }
+        .feedback.wrong-fb { background: rgba(255,107,53,0.08); border: 1px solid rgba(255,107,53,0.2); color: var(--orange); }
+
+        .controls { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 25px 0; }
+        .btn { padding: 12px 28px; border-radius: 10px; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.95rem; cursor: pointer; border: none; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, var(--yellow), var(--orange)); color: var(--bg); }
+        .btn-primary:hover { transform: scale(1.05); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: var(--text); border: 1px solid rgba(255,255,255,0.2); }
+
+        .anecdote { background: linear-gradient(135deg, rgba(255,230,0,0.1), rgba(255,107,53,0.08)); border: 1px solid rgba(255,230,0,0.2); border-radius: 16px; padding: 25px; margin-bottom: 25px; }
+        .anecdote h3 { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--orange); margin-bottom: 10px; }
+        .anecdote p { color: var(--text-dim); line-height: 1.8; font-size: 0.95rem; }
+
+        .cert-badge { text-align: center; padding: 30px; display: none; }
+        .cert-badge h3 { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; margin-bottom: 15px; }
+        .cert-badge .emoji { font-size: 4rem; margin-bottom: 15px; }
+        .cert-badge p { color: var(--text-dim); line-height: 1.7; }
+
+        .nav-bottom { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .nav-bottom a { display: inline-flex; align-items: center; gap: 8px; color: var(--text-dim); text-decoration: none; font-weight: 600; }
+        .nav-bottom a:hover { color: var(--cyan); }
+    </style>
+</head>
+<body>
+
+<div class="nav-bar">
+    <span class="phase-label">⑤ EVALUATE</span>
+    <a href="index.html">🏠 Indice</a>
+</div>
+
+<div class="container">
+    <h1>🏆 Mettiti alla Prova!</h1>
+    <p class="subtitle">Rispondi alle domande e scopri il tuo livello di comprensione.</p>
+
+    <div class="anecdote">
+        <h3>😂 Aneddoto: L'esame che nessuno superò</h3>
+        <p>
+            Nel 1997, uno studioso di nome <em>David Eddy</em> sottopose un problema bayesiano a 100 medici. Il problema era identico a quello del test medico che avete visto nella fase Engage. Il risultato? Solo il <strong>5%</strong> dei medici diede la risposta corretta. E non parliamo di studenti — parliamo di <em>medici che prescrivono test diagnostici ogni giorno!</em> 🏥
+            <br><br>
+            Eddy commentò: "Se i medici non capiscono la probabilità condizionata, come possono spiegare ai pazienti cosa significa un test positivo?" Da allora, il Teorema di Bayes è diventato materia obbligatoria in molte facoltà di Medicina. Quindi, se superate questo test, siete già meglio del 95% dei medici del 1997! 💪
+        </p>
+    </div>
+
+    <!-- Score display -->
+    <div class="score-display">
+        <div class="score" id="scoreDisplay">0 / 8</div>
+        <div class="score-label">Risposte corrette</div>
+        <div class="score-bar"><div class="score-fill" id="scoreBar" style="width:0%"></div></div>
+    </div>
+
+    <div class="card">
+        <h2>📝 Quiz Interattivo</h2>
+
+        <!-- Q1 -->
+        <div class="question" id="q1">
+            <div class="q-num">DOMANDA 1 / 8</div>
+            <div class="q-text">In una classe di 40 studenti, 25 giocano a calcio (evento C), 18 suonano uno strumento (evento S), e 10 fanno entrambi. Qual è P(C | S)?</div>
+            <div class="options">
+                <button class="option-btn" onclick="answer(1, this, 'wrong')">10/40</button>
+                <button class="option-btn" onclick="answer(1, this, 'correct')">10/18</button>
+                <button class="option-btn" onclick="answer(1, this, 'wrong')">25/40</button>
+                <button class="option-btn" onclick="answer(1, this, 'wrong')">25/18</button>
+            </div>
+            <div class="feedback correct-fb" id="fb1c">✅ Esatto! P(C|S) = P(C∩S)/P(S) = 10/18. Condizioniamo allo spazio degli studenti che suonano (18) e contiamo quanti di questi giocano a calcio (10).</div>
+            <div class="feedback wrong-fb" id="fb1w">❌ P(C|S) = P(C∩S)/P(S) = (10/40)/(18/40) = 10/18 ≈ 0.556. Il condizionamento restringe lo spazio a chi suona (18 persone), e su questi 10 giocano a calcio.</div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="question" id="q2">
+            <div class="q-num">DOMANDA 2 / 8</div>
+            <div class="q-text">Se P(A) = 0.4, P(B) = 0.5 e P(A∩B) = 0.1, qual è P(A|B)?</div>
+            <div class="options">
+                <button class="option-btn" onclick="answer(2, this, 'wrong')">0.8</button>
+                <button class="option-btn" onclick="answer(2, this, 'wrong')">0.4</button>
+                <button class="option-btn" onclick="answer(2, this, 'correct')">0.2</button>
+                <button class="option-btn" onclick="answer(2, this, 'wrong')">0.25</button>
+            </div>
+            <div class="feedback correct-fb" id="fb2c">✅ Corretto! P(A|B) = P(A∩B)/P(B) = 0.1/0.5 = 0.2.</div>
+            <div class="feedback wrong-fb" id="fb2w">❌ P(A|B) = P(A∩B)/P(B) = 0.1/0.5 = 0.2. Attenzione: non basta dividere le probabilità! Serve l'intersezione al numeratore.</div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="question" id="q3">
+            <div class="q-num">DOMANDA 3 / 8</div>
+            <div class="q-text">Un test per una malattia ha sensibilità 0.95 e specificità 0.90. La malattia colpisce il 2% della popolazione. Se il test è positivo, qual è la probabilità di essere malato? (Usa il Teorema di Bayes)</div>
+            <div class="options">
+                <button class="option-btn" onclick="answer(3, this, 'correct')">≈ 16.1%</button>
+                <button class="option-btn" onclick="answer(3, this, 'wrong')">≈ 95%</button>
+                <button class="option-btn" onclick="answer(3, this, 'wrong')">≈ 90%</button>
+                <button class="option-btn" onclick="answer(3, this, 'wrong')">≈ 50%</button>
+            </div>
+            <div class="feedback correct-fb" id="fb3c">✅ Perfetto! P(M|+) = (0.95×0.02) / (0.95×0.02 + 0.10×0.98) = 0.019/0.117 ≈ 0.162. Anche con un test molto accurato, la rarità della malattia genera molti falsi positivi!</div>
+            <div class="feedback wrong-fb" id="fb3w">❌ Applica Bayes: P(M|+) = (0.95×0.02) / (0.95×0.02 + 0.10×0.98) = 0.019/0.117 ≈ 16.1%. La risposta 95% è P(+|M), non P(M|+)! È l'errore più comune — e più pericoloso.</div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="question" id="q4">
+            <div class="q-num">DOMANDA 4 / 8</div>
+            <div class="q-text">Se P(A|B) = 0.7 e P(B) = 0.4, qual è P(A∩B)?</div>
+            <div class="options">
+                <button class="option-btn" onclick="answer(4, this, 'wrong')">0.7</button>
+                <button class="option-btn" onclick="answer(4, this, 'wrong')">1.75</button>
+                <button class="option-btn" onclick="answer(4, this, 'wrong')">0.4</button>
+                <button class="option-btn" onclick="answer(4, this, 'correct')">0.28</button>
+            </div>
+            <div class="feedback correct-fb" id="fb4c">✅ Esatto! Dalla definizione: P(A∩B) = P(A|B)·P(B) = 0.7×0.4 = 0.28. Questo è il passaggio chiave nella derivazione del Teorema di Bayes!</div>
+            <div class="feedback wrong-fb" id="fb4w">❌ Dalla definizione di probabilità condizionata: P(A|B) = P(A∩B)/P(B), quindi P(A∩B) = P(A|B)·P(B) = 0.7×0.4 = 0.28.</div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="question" id="q5">
+            <div class="q-num">DOMANDA 5 / 8</div>
+            <div class="q-text">Nel Teorema di Bayes, P(A) è chiamata:</div>
+            <div class="options">
+                <button class="option-btn" onclick="answer(5, this, 'correct')">Probabilità a priori</button>
+                <button class="option-btn" onclick="answer(5, this, 'wrong')">Probabilità a posteriori</button>
+                <button class="option-btn" onclick="answer(5, this, 'wrong')">Verosimiglianza</button>
+                <button class="option-btn" onclick="answer(5, this, 'wrong')">Evidenza</button>
+            </div>
+            <div class="feedback correct-fb" id="fb5c">✅ Esatto! P(A) è la probabilità <em>a priori</em> (prior), la nostra convinzione iniziale prima di osservare l'evidenza B.</div>
+            <div class="feedback wrong-fb" id="fb5w">❌ P(A) è la probabilità <em>a priori</em>. P(A|B) è la a posteriori, P(B|A) è la verosimiglianza, e P(B) è l'evidenza.</div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="question" id="q6">
+            <div class="q-num">DOMANDA 6 / 8</div>
+            <div class="q-text">In un'urna ci sono 3 palline rosse e 7 blu. In un'altra ci sono 6 rosse e 4 blu. Scegli un'urna a caso (50%) ed estrai una pallina rossa. Qual è la probabilità che tu abbia scelto la prima urna?</div>
+            <div class="options">
+                <button class="option-btn" onclick="answer(6, this, 'correct')">1/3</button>
+                <button class="option-btn" onclick="answer(6, this, 'wrong')">3/10</button>
+                <button class="option-btn" onclick="answer(6, this, 'wrong')">1/2</button>
+                <button class="option-btn" onclick="answer(6, this, 'wrong')">3/9</button>
+            </div>
+            <div class="feedback correct-fb" id="fb6c">✅ Perfetto! P(U1|R) = P(R|U1)·P(U1) / [P(R|U1)·P(U1) + P(R|U2)·P(U2)] = (0.3×0.5)/(0.3×0.5 + 0.6×0.5) = 0.15/0.45 = 1/3.</div>
+            <div class="feedback wrong-fb" id="fb6w">❌ P(U1|R) = (0.3×0.5) / (0.3×0.5 + 0.6×0.5) = 0.15/0.45 = 1/3. Essendo la seconda urna più "rossa", è più probabile che la pallina rossa provenga da lì!</div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="question" id="q7">
+            <div class="q-num">DOMANDA 7 / 8</div>
+            <div class="q-text">Se P(A|B) = P(A), allora:</div>
+            <div class="options">
+                <button class="option-btn" onclick="answer(7, this, 'wrong')">A e B sono complementari</button>
+                <button class="option-btn" onclick="answer(7, this, 'correct')">A e B sono indipendenti</button>
+                <button class="option-btn" onclick="answer(7, this, 'wrong')">A è impossibile</button>
+                <button class="option-btn" onclick="answer(7, this, 'wrong')">B implica sempre A</button>
+            </div>
+            <div class="feedback correct-fb" id="fb7c">✅ Esatto! Se sapere che B è accaduto non modifica la probabilità di A, allora A e B sono <strong>indipendenti</strong>. In questo caso P(A∩B) = P(A)·P(B).</div>
+            <div class="feedback wrong-fb" id="fb7w">❌ P(A|B) = P(A) significa che l'informazione su B non cambia la probabilità di A. Questa è proprio la <strong>definizione di indipendenza</strong>! Se A e B fossero indipendenti, P(A∩B) = P(A)·P(B).</div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="question" id="q8">
+            <div class="q-num">DOMANDA 8 / 8</div>
+            <div class="q-text">Nel problema di Monty Hall (3 porte, il conduttore apre una porta con la capra), qual è la strategia ottimale?</div>
+            <div class="options">
+                <button class="option-btn" onclick="answer(8, this, 'wrong')">È indifferente: restare o cambiare è uguale</button>
+                <button class="option-btn" onclick="answer(8, this, 'wrong')">Restare: P(vincere) = 1/2</button>
+                <button class="option-btn" onclick="answer(8, this, 'correct')">Cambiare: P(vincere | cambio) = 2/3</button>
+                <button class="option-btn" onclick="answer(8, this, 'wrong')">Cambiare: P(vincere | cambio) = 3/4</button>
+            </div>
+            <div class="feedback correct-fb" id="fb8c">✅ Complimenti! Cambiando, la probabilità di vincere è 2/3. Il conduttore fornisce informazione eliminando una porta sbagliata, e la probabilità 2/3 si concentra sull'unica porta rimanente. Bayes lo conferma!</div>
+            <div class="feedback wrong-fb" id="fb8w">❌ La risposta corretta è cambiare! P(vincere cambiando) = 2/3. All'inizio P(auto nella tua porta) = 1/3 e P(auto nelle altre) = 2/3. Quando il conduttore apre una porta, la probabilità 2/3 non si divide: si concentra tutta sull'altra porta chiusa.</div>
+        </div>
+    </div>
+
+    <!-- Certificate badge -->
+    <div class="cert-badge" id="certBadge">
+        <div class="emoji" id="certEmoji"></div>
+        <h3 id="certTitle"></h3>
+        <p id="certText"></p>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-primary" onclick="resetQuiz()">🔄 Riprova il Quiz</button>
+        <button class="btn btn-secondary" onclick="window.scrollTo({top:0, behavior:'smooth'})">⬆️ Torna su</button>
+    </div>
+
+    <div class="nav-bottom">
+        <a href="elaborate.html">← Elaborate</a>
+        <a href="index.html">🏠 Torna all'indice</a>
+    </div>
+</div>
+
+<script>
+let score = 0;
+let answered = 0;
+const totalQuestions = 8;
+
+function answer(qNum, btn, result) {
+    // Disable all options for this question
+    const q = document.getElementById('q' + qNum);
+    const options = q.querySelectorAll('.option-btn');
+    options.forEach(o => {
+        o.classList.add('disabled');
+        if (o === btn) {
+            o.classList.add(result === 'correct' ? 'correct' : 'wrong');
+        }
+    });
+
+    // Show feedback
+    if (result === 'correct') {
+        score++;
+        document.getElementById('fb' + qNum + 'c').style.display = 'block';
+    } else {
+        document.getElementById('fb' + qNum + 'w').style.display = 'block';
+        // Highlight correct answer
+        options.forEach(o => {
+            if (o.onclick && o.onclick.toString().includes("'correct'")) {
+                o.classList.add('correct');
+            }
+        });
+    }
+
+    answered++;
+    updateScore();
+
+    if (answered === totalQuestions) {
+        showCertificate();
+    }
+}
+
+function updateScore() {
+    document.getElementById('scoreDisplay').textContent = score + ' / ' + totalQuestions;
+    document.getElementById('scoreBar').style.width = (score / totalQuestions * 100) + '%';
+}
+
+function showCertificate() {
+    const badge = document.getElementById('certBadge');
+    badge.style.display = 'block';
+
+    const pct = score / totalQuestions;
+
+    if (pct >= 0.875) {
+        document.getElementById('certEmoji').textContent = '🏆';
+        document.getElementById('certTitle').textContent = 'Maestro di Bayes!';
+        document.getElementById('certTitle').style.color = 'var(--yellow)';
+        document.getElementById('certText').textContent = 'Hai ottenuto ' + score + '/' + totalQuestions + '! Sei nel 5% di chi capisce davvero la probabilità condizionata. Anche meglio del 95% dei medici del 1997!';
+    } else if (pct >= 0.625) {
+        document.getElementById('certEmoji').textContent = '🌟';
+        document.getElementById('certTitle').textContent = 'Apprendista Bayesiano';
+        document.getElementById('certTitle').style.color = 'var(--cyan)';
+        document.getElementById('certText').textContent = 'Hai ottenuto ' + score + '/' + totalQuestions + '! Buona comprensione, ma c\'è ancora margine di miglioramento. Riguarda le spiegazioni e riprova!';
+    } else if (pct >= 0.375) {
+        document.getElementById('certEmoji').textContent = '📚';
+        document.getElementById('certTitle').textContent = 'Studente in Preparazione';
+        document.getElementById('certTitle').style.color = 'var(--orange)';
+        document.getElementById('certText').textContent = 'Hai ottenuto ' + score + '/' + totalQuestions + '. Non scoraggiarti! Bayes è controintuitivo per tutti. Ricorda: il 95% dei medici sbagliava queste domande. Ripassa e riprova!';
+    } else {
+        document.getElementById('certEmoji').textContent = '💪';
+        document.getElementById('certTitle').textContent = 'Non Arrenderti!';
+        document.getElementById('certTitle').style.color = 'var(--magenta)';
+        document.getElementById('certText').textContent = 'Hai ottenuto ' + score + '/' + totalQuestions + '. Bayes è difficile per tutti all\'inizio! Torna alle fasi Engage e Explore, gioca con i simulatori, e poi riprova. Ce la puoi fare!';
+    }
+
+    badge.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function resetQuiz() {
+    score = 0;
+    answered = 0;
+    updateScore();
+
+    for (let i = 1; i <= totalQuestions; i++) {
+        const q = document.getElementById('q' + i);
+        q.querySelectorAll('.option-btn').forEach(o => {
+            o.classList.remove('correct', 'wrong', 'disabled');
+        });
+        const cfb = document.getElementById('fb' + i + 'c');
+        const wfb = document.getElementById('fb' + i + 'w');
+        if (cfb) cfb.style.display = 'none';
+        if (wfb) wfb.style.display = 'none';
+    }
+
+    document.getElementById('certBadge').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2. Explore — Probabilità Condizionata & Bayes</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0e27;
+            --card-bg: rgba(255,255,255,0.05);
+            --cyan: #00f0ff;
+            --magenta: #ff00e5;
+            --yellow: #ffe600;
+            --green: #00ff88;
+            --orange: #ff6b35;
+            --purple: #a855f7;
+            --text: #e0e6ff;
+            --text-dim: #8892b0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        .nav-bar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(10,14,39,0.9); backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 12px 25px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-bar .phase-label { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: var(--cyan); font-weight: 700; }
+        .nav-bar a { color: var(--text-dim); text-decoration: none; font-size: 0.85rem; }
+        .nav-bar a:hover { color: var(--cyan); }
+
+        .container { max-width: 950px; margin: 0 auto; padding: 80px 20px 40px; }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif; font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 900; text-align: center; margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--cyan), #00c4ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+
+        .subtitle { text-align: center; color: var(--text-dim); margin-bottom: 40px; }
+
+        .section { background: var(--card-bg); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); padding: 30px; margin-bottom: 25px; }
+
+        .section h2 { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--cyan); margin-bottom: 15px; }
+        .section p { color: var(--text-dim); line-height: 1.7; margin-bottom: 10px; }
+
+        .anecdote {
+            background: linear-gradient(135deg, rgba(0,240,255,0.1), rgba(168,85,247,0.08));
+            border: 1px solid rgba(0,240,255,0.2); border-radius: 16px; padding: 25px; margin-bottom: 25px;
+        }
+        .anecdote h3 { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--purple); margin-bottom: 10px; }
+        .anecdote p { color: var(--text-dim); line-height: 1.8; font-size: 0.95rem; }
+
+        canvas { display: block; margin: 0 auto; border-radius: 12px; }
+
+        .controls { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 15px 0; }
+
+        .btn {
+            padding: 10px 24px; border-radius: 10px; font-family: 'Inter', sans-serif;
+            font-weight: 600; font-size: 0.9rem; cursor: pointer; border: none; transition: all 0.3s;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--cyan), #0088ff); color: var(--bg); }
+        .btn-primary:hover { transform: scale(1.05); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: var(--text); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+
+        .slider-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; flex-wrap: wrap; }
+        .slider-row label { min-width: 180px; font-size: 0.85rem; color: var(--text-dim); }
+        .slider-row input[type="range"] { flex: 1; -webkit-appearance: none; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; }
+        .slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--cyan); border-radius: 50%; cursor: pointer; }
+        .slider-row .val { font-family: 'Orbitron', sans-serif; color: var(--cyan); font-weight: 700; min-width: 40px; text-align: right; font-size: 0.9rem; }
+
+        .info-box {
+            background: rgba(0,255,136,0.05); border: 1px solid rgba(0,255,136,0.2);
+            border-radius: 10px; padding: 15px 20px; margin-top: 15px;
+        }
+        .info-box p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.6; }
+        .info-box strong { color: var(--green); }
+
+        .formula-display {
+            text-align: center; font-size: 1.3rem; color: var(--yellow);
+            padding: 15px; background: rgba(255,230,0,0.05); border-radius: 10px;
+            border: 1px solid rgba(255,230,0,0.15); margin: 15px 0;
+            font-family: 'Georgia', serif;
+        }
+
+        .tab-buttons { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn {
+            padding: 10px 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.05); color: var(--text-dim); cursor: pointer;
+            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.85rem; transition: all 0.3s;
+        }
+        .tab-btn.active { background: rgba(0,240,255,0.15); color: var(--cyan); border-color: var(--cyan); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .nav-bottom { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .nav-bottom a { display: inline-flex; align-items: center; gap: 8px; color: var(--text-dim); text-decoration: none; font-weight: 600; }
+        .nav-bottom a:hover { color: var(--cyan); }
+        .nav-bottom .next { color: var(--cyan); }
+    </style>
+</head>
+<body>
+
+<div class="nav-bar">
+    <span class="phase-label">② EXPLORE</span>
+    <a href="index.html">🏠 Indice</a>
+</div>
+
+<div class="container">
+    <h1>🔬 Esplora la Probabilità Condizionata</h1>
+    <p class="subtitle">Interagisci con urne, diagrammi di Venn e schemi ad albero per scoprire come funziona.</p>
+
+    <div class="anecdote">
+        <h3>🎲 Aneddoto: Fermat, Pascal e il Cavaliere</h3>
+        <p>
+            Tutto è iniziato nel 1654 con un giocatore d'azzardo! Il <em>Cavaliere de Méré</em>, un nobile francese appassionato di dadi, scrisse a <strong>Blaise Pascal</strong> per risolvere una disputa su come dividere la posta in un gioco interrotto. Pascal scrisse a <strong>Pierre de Fermat</strong>, e dalla loro corrispondenza nacque la teoria della probabilità! Il Cavaliere non sapeva di aver dato origine a una delle branche più importanti della matematica — lui voleva solo vincere ai dadi! 🎲🍷
+        </p>
+    </div>
+
+    <!-- Tab navigation -->
+    <div class="tab-buttons">
+        <button class="tab-btn active" onclick="switchTab('urn')">🎱 Urne e Palline</button>
+        <button class="tab-btn" onclick="switchTab('venn')">⭕ Diagramma di Venn</button>
+        <button class="tab-btn" onclick="switchTab('tree')">🌳 Schema ad Albero</button>
+    </div>
+
+    <!-- TAB 1: Urne e Palline -->
+    <div class="tab-content active" id="tab-urn">
+        <div class="section">
+            <h2>🎱 Simulatore: Estrazione da Urne</h2>
+            <p>Immagina due urne. Scegli un'urna a caso, poi estrai una pallina. La probabilità del colore dipende da quale urna hai scelto!</p>
+
+            <div class="slider-row">
+                <label>Urna 1 — Palline Rosse:</label>
+                <input type="range" id="u1Red" min="0" max="10" value="7" oninput="updateUrn()">
+                <span class="val" id="u1RedVal">7</span>
+            </div>
+            <div class="slider-row">
+                <label>Urna 1 — Palline Blu:</label>
+                <input type="range" id="u1Blue" min="0" max="10" value="3" oninput="updateUrn()">
+                <span class="val" id="u1BlueVal">3</span>
+            </div>
+            <div class="slider-row">
+                <label>Urna 2 — Palline Rosse:</label>
+                <input type="range" id="u2Red" min="0" max="10" value="2" oninput="updateUrn()">
+                <span class="val" id="u2RedVal">2</span>
+            </div>
+            <div class="slider-row">
+                <label>Urna 2 — Palline Blu:</label>
+                <input type="range" id="u2Blue" min="0" max="10" value="8" oninput="updateUrn()">
+                <span class="val" id="u2BlueVal">8</span>
+            </div>
+
+            <canvas id="urnCanvas" width="700" height="320"></canvas>
+
+            <div class="controls">
+                <button class="btn btn-primary" onclick="drawBall()">🎯 Estrai una pallina!</button>
+                <button class="btn btn-secondary" onclick="drawMany(100)">⚡ Estrai 100 volte</button>
+                <button class="btn btn-secondary" onclick="drawMany(1000)">🚀 Estrai 1000 volte</button>
+                <button class="btn btn-secondary" onclick="resetUrn()">🔄 Reset</button>
+            </div>
+
+            <div class="formula-display">
+                P(Urna 1 | Rossa) = P(Rossa | Urna 1) · P(Urna 1) / P(Rossa)
+            </div>
+
+            <div class="info-box" id="urnInfo">
+                <p>Regola i pallini nelle urne e fai delle estrazioni. Osserva come la probabilità di aver scelto un'urna <strong>condizionatamente al colore estratto</strong> cambia!</p>
+            </div>
+
+            <div id="urnStats" style="display:none;">
+                <div class="info-box">
+                    <p><strong>Risultati delle estrazioni:</strong></p>
+                    <p id="urnStatsText"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: Diagramma di Venn -->
+    <div class="tab-content" id="tab-venn">
+        <div class="section">
+            <h2>⭕ Diagramma di Venn Interattivo</h2>
+            <p>Trascina i cerchi per modificare l'intersezione e osserva come cambia la probabilità condizionata.</p>
+
+            <canvas id="vennCanvas" width="700" height="450"></canvas>
+
+            <div class="slider-row">
+                <label>P(A) — Probabilità di A:</label>
+                <input type="range" id="sliderPA" min="5" max="95" value="40" oninput="updateVenn()">
+                <span class="val" id="valPA">0.40</span>
+            </div>
+            <div class="slider-row">
+                <label>P(B) — Probabilità di B:</label>
+                <input type="range" id="sliderPB" min="5" max="95" value="35" oninput="updateVenn()">
+                <span class="val" id="valPB">0.35</span>
+            </div>
+            <div class="slider-row">
+                <label>P(A∩B) — Intersezione:</label>
+                <input type="range" id="sliderPAB" min="0" max="35" value="15" oninput="updateVenn()">
+                <span class="val" id="valPAB">0.15</span>
+            </div>
+
+            <div class="formula-display">
+                P(A|B) = P(A∩B) / P(B)
+            </div>
+
+            <div class="info-box" id="vennInfo">
+                <p><strong>P(A|B)</strong> = P(A∩B) / P(B) = <span id="vennResultA">0.43</span></p>
+                <p><strong>P(B|A)</strong> = P(A∩B) / P(A) = <span id="vennResultB">0.38</span></p>
+                <p style="margin-top:10px; font-size:0.85rem;">La probabilità condizionata è la <strong>frazione di B che coincide con A</strong>: quanta parte del cerchio B è "dentro" il cerchio A?</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: Schema ad Albero -->
+    <div class="tab-content" id="tab-tree">
+        <div class="section">
+            <h2>🌳 Schema ad Albero Interattivo</h2>
+            <p>Modifica le probabilità sui rami e osserva come si propagano attraverso l'albero. Clicca su un ramo per evidenziare il percorso.</p>
+
+            <div class="slider-row">
+                <label>P(Urna 1):</label>
+                <input type="range" id="treeP1" min="5" max="95" value="50" oninput="updateTree()">
+                <span class="val" id="treeP1Val">0.50</span>
+            </div>
+            <div class="slider-row">
+                <label>P(Rossa | Urna 1):</label>
+                <input type="range" id="treePR1" min="0" max="100" value="70" oninput="updateTree()">
+                <span class="val" id="treePR1Val">0.70</span>
+            </div>
+            <div class="slider-row">
+                <label>P(Rossa | Urna 2):</label>
+                <input type="range" id="treePR2" min="0" max="100" value="20" oninput="updateTree()">
+                <span class="val" id="treePR2Val">0.20</span>
+            </div>
+
+            <canvas id="treeCanvas" width="700" height="480"></canvas>
+
+            <div class="info-box" id="treeInfo">
+                <p><strong>P(Urna1 | Rossa)</strong> = P(R|U1)·P(U1) / [P(R|U1)·P(U1) + P(R|U2)·P(U2)] = <span id="treeResult">0.78</span></p>
+                <p style="margin-top:8px;">I percorsi che portano a "Rossa" sono due. Il Teorema di Bayes ci dice la frazione del percorso che passa per Urna 1.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-bottom">
+        <a href="engage.html">← Engage</a>
+        <a href="explain.html" class="next">Explain — La teoria →</a>
+    </div>
+</div>
+
+<script>
+// =================== TAB SWITCHING ===================
+function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    event.target.classList.add('active');
+    if (tab === 'venn') updateVenn();
+    if (tab === 'tree') updateTree();
+    if (tab === 'urn') updateUrn();
+}
+
+// =================== URN SIMULATOR ===================
+let urnStats = { u1r: 0, u1b: 0, u2r: 0, u2b: 0 };
+
+function updateUrn() {
+    ['u1Red','u1Blue','u2Red','u2Blue'].forEach(id => {
+        document.getElementById(id + 'Val').textContent = document.getElementById(id).value;
+    });
+    drawUrnScene();
+}
+
+function drawUrnScene() {
+    const canvas = document.getElementById('urnCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const u1r = parseInt(document.getElementById('u1Red').value);
+    const u1b = parseInt(document.getElementById('u1Blue').value);
+    const u2r = parseInt(document.getElementById('u2Red').value);
+    const u2b = parseInt(document.getElementById('u2Blue').value);
+
+    // Draw Urn 1
+    drawUrn(ctx, 150, 150, 'Urna 1', u1r, u1b);
+    // Draw Urn 2
+    drawUrn(ctx, 550, 150, 'Urna 2', u2r, u2b);
+
+    // Title
+    ctx.fillStyle = '#8892b0';
+    ctx.font = '13px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Scegli un\'urna a caso (50%/50%), poi estrai', 350, 300);
+}
+
+function drawUrn(ctx, cx, cy, label, redCount, blueCount) {
+    // Urn body
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + 30, 80, 90, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Label
+    ctx.fillStyle = '#e0e6ff';
+    ctx.font = 'bold 14px Orbitron, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, cx, cy - 50);
+
+    // Draw balls
+    const total = redCount + blueCount;
+    const allBalls = [];
+    for (let i = 0; i < redCount; i++) allBalls.push('#ff4466');
+    for (let i = 0; i < blueCount; i++) allBalls.push('#4488ff');
+
+    allBalls.forEach((color, i) => {
+        const cols = 5;
+        const row = Math.floor(i / cols);
+        const col = i % cols;
+        const bx = cx - 30 + col * 15;
+        const by = cy - 15 + row * 15;
+        ctx.beginPath();
+        ctx.arc(bx, by, 6, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+    });
+
+    // Count labels
+    ctx.font = '12px Inter, sans-serif';
+    ctx.fillStyle = '#ff4466';
+    ctx.fillText(`Rosse: ${redCount}`, cx - 30, cy + 135);
+    ctx.fillStyle = '#4488ff';
+    ctx.fillText(`Blu: ${blueCount}`, cx + 30, cy + 135);
+}
+
+function drawBall() {
+    const u1r = parseInt(document.getElementById('u1Red').value);
+    const u1b = parseInt(document.getElementById('u1Blue').value);
+    const u2r = parseInt(document.getElementById('u2Red').value);
+    const u2b = parseInt(document.getElementById('u2Blue').value);
+
+    const isUrn1 = Math.random() < 0.5;
+    const urn = isUrn1 ? { r: u1r, b: u1b, name: 'Urna 1' } : { r: u2r, b: u2b, name: 'Urna 2' };
+    const total = urn.r + urn.b;
+    if (total === 0) return;
+    const isRed = Math.random() < urn.r / total;
+
+    if (isUrn1 && isRed) urnStats.u1r++;
+    else if (isUrn1 && !isRed) urnStats.u1b++;
+    else if (!isUrn1 && isRed) urnStats.u2r++;
+    else urnStats.u2b++;
+
+    updateUrnStats();
+}
+
+function drawMany(n) {
+    for (let i = 0; i < n; i++) drawBall();
+}
+
+function resetUrn() {
+    urnStats = { u1r: 0, u1b: 0, u2r: 0, u2b: 0 };
+    document.getElementById('urnStats').style.display = 'none';
+}
+
+function updateUrnStats() {
+    document.getElementById('urnStats').style.display = 'block';
+    const total = urnStats.u1r + urnStats.u1b + urnStats.u2r + urnStats.u2b;
+    const totalRed = urnStats.u1r + urnStats.u2r;
+
+    let text = `Estrazioni totali: ${total}\n`;
+    text += `Palline rosse estratte: ${totalRed} (da Urna 1: ${urnStats.u1r}, da Urna 2: ${urnStats.u2r})\n`;
+
+    if (totalRed > 0) {
+        const pU1givenR = (urnStats.u1r / totalRed * 100).toFixed(1);
+        text += `P(Urna 1 | Rossa) ≈ ${urnStats.u1r}/${totalRed} = ${pU1givenR}%`;
+
+        // Theoretical
+        const u1r = parseInt(document.getElementById('u1Red').value);
+        const u1b = parseInt(document.getElementById('u1Blue').value);
+        const u2r = parseInt(document.getElementById('u2Red').value);
+        const u2b = parseInt(document.getElementById('u2Blue').value);
+        const pR_U1 = u1r + u1b > 0 ? u1r / (u1r + u1b) : 0;
+        const pR_U2 = u2r + u2b > 0 ? u2r / (u2r + u2b) : 0;
+        const pR = 0.5 * pR_U1 + 0.5 * pR_U2;
+        const pU1_R = pR > 0 ? (pR_U1 * 0.5 / pR * 100).toFixed(1) : '—';
+        text += `\nValore teorico: ${pU1_R}%`;
+    }
+
+    document.getElementById('urnStatsText').innerText = text;
+}
+
+// =================== VENN DIAGRAM ===================
+function updateVenn() {
+    const pA = parseInt(document.getElementById('sliderPA').value) / 100;
+    const pB = parseInt(document.getElementById('sliderPB').value) / 100;
+    const maxInter = Math.min(pA, pB);
+    let pAB = parseInt(document.getElementById('sliderPAB').value) / 100;
+
+    document.getElementById('valPA').textContent = pA.toFixed(2);
+    document.getElementById('valPB').textContent = pB.toFixed(2);
+
+    // Clamp intersection
+    if (pAB > maxInter) {
+        pAB = Math.round(maxInter * 100);
+        document.getElementById('sliderPAB').value = pAB;
+        pAB = pAB / 100;
+    }
+    document.getElementById('sliderPAB').max = Math.round(maxInter * 100);
+    document.getElementById('valPAB').textContent = pAB.toFixed(2);
+
+    const pAgivenB = pB > 0 ? (pAB / pB) : 0;
+    const pBgivenA = pA > 0 ? (pAB / pA) : 0;
+
+    document.getElementById('vennResultA').textContent = pAgivenB.toFixed(3);
+    document.getElementById('vennResultB').textContent = pBgivenA.toFixed(3);
+
+    drawVenn(pA, pB, pAB);
+}
+
+function drawVenn(pA, pB, pAB) {
+    const canvas = document.getElementById('vennCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const cx = 350, cy = 210;
+    const maxR = 150;
+
+    // Radius proportional to probability
+    const rA = Math.sqrt(pA) * maxR;
+    const rB = Math.sqrt(pB) * maxR;
+
+    // Offset to control intersection
+    // We want pAB to correspond to the visual overlap
+    const minDist = Math.abs(rA - rB);
+    const maxDist = rA + rB;
+    // Simple mapping: more intersection = less distance
+    const interFrac = maxInter > 0 ? pAB / Math.min(pA, pB) : 0;
+    const dist = maxDist - interFrac * (maxDist - minDist);
+
+    const ax = cx - dist / 2;
+    const bx = cx + dist / 2;
+
+    // Draw A
+    ctx.beginPath();
+    ctx.arc(ax, cy, rA, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 240, 255, 0.15)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Draw B
+    ctx.beginPath();
+    ctx.arc(bx, cy, rB, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255, 0, 229, 0.15)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 0, 229, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Labels
+    ctx.font = 'bold 16px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#00f0ff';
+    ctx.fillText('A', ax - rA / 3, cy - 10);
+    ctx.fillStyle = '#ff00e5';
+    ctx.fillText('B', bx + rB / 3, cy - 10);
+
+    // Intersection label
+    ctx.fillStyle = '#ffe600';
+    ctx.font = '13px Inter, sans-serif';
+    ctx.fillText(`A∩B = ${pAB.toFixed(2)}`, cx, cy + 5);
+
+    // Probabilities
+    ctx.font = '12px Inter, sans-serif';
+    ctx.fillStyle = '#8892b0';
+    ctx.fillText(`P(A) = ${pA.toFixed(2)}`, ax, cy + rA + 25);
+    ctx.fillText(`P(B) = ${pB.toFixed(2)}`, bx, cy + rB + 25);
+    ctx.fillText(`P(A|B) = ${(pB > 0 ? pAB / pB : 0).toFixed(3)}`, cx, cy + Math.max(rA, rB) + 55);
+    ctx.fillText(`P(B|A) = ${(pA > 0 ? pAB / pA : 0).toFixed(3)}`, cx, cy + Math.max(rA, rB) + 75);
+
+    // Title
+    ctx.font = 'bold 13px Orbitron, sans-serif';
+    ctx.fillStyle = '#e0e6ff';
+    ctx.fillText('Diagramma di Venn — Probabilità Condizionata', cx, 30);
+}
+
+// =================== TREE DIAGRAM ===================
+function updateTree() {
+    const pU1 = parseInt(document.getElementById('treeP1').value) / 100;
+    const pU2 = 1 - pU1;
+    const pR1 = parseInt(document.getElementById('treePR1').value) / 100;
+    const pR2 = parseInt(document.getElementById('treePR2').value) / 100;
+
+    document.getElementById('treeP1Val').textContent = pU1.toFixed(2);
+    document.getElementById('treePR1Val').textContent = pR1.toFixed(2);
+    document.getElementById('treePR2Val').textContent = pR2.toFixed(2);
+
+    const pR = pR1 * pU1 + pR2 * pU2;
+    const pU1R = pR > 0 ? (pR1 * pU1 / pR) : 0;
+
+    document.getElementById('treeResult').textContent = pU1R.toFixed(3);
+
+    drawTree(pU1, pU2, pR1, pR2);
+}
+
+function drawTree(pU1, pU2, pR1, pR2) {
+    const canvas = document.getElementById('treeCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const x0 = 80;
+    const x1 = 300;
+    const x2 = 550;
+    const y0 = 240;
+
+    // Root
+    ctx.fillStyle = '#e0e6ff';
+    ctx.font = 'bold 13px Orbitron, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Scelta', x0, y0 + 5);
+
+    // Level 1: Urns
+    const yU1 = 120;
+    const yU2 = 360;
+
+    drawBranch(ctx, x0, y0, x1, yU1, pU1, '#00f0ff');
+    drawBranch(ctx, x0, y0, x1, yU2, pU2, '#a855f7');
+
+    ctx.fillStyle = '#00f0ff';
+    ctx.font = 'bold 12px Inter, sans-serif';
+    ctx.fillText(`Urna 1 (P=${pU1.toFixed(2)})`, x1 + 70, yU1 - 10);
+
+    ctx.fillStyle = '#a855f7';
+    ctx.fillText(`Urna 2 (P=${pU2.toFixed(2)})`, x1 + 70, yU2 - 10);
+
+    // Level 2: Colors
+    const yU1R = 60;
+    const yU1B = 180;
+    const yU2R = 300;
+    const yU2B = 420;
+
+    drawBranch(ctx, x1 + 50, yU1, x2, yU1R, pR1, '#ff4466');
+    drawBranch(ctx, x1 + 50, yU1, x2, yU1B, 1 - pR1, '#4488ff');
+    drawBranch(ctx, x1 + 50, yU2, x2, yU2R, pR2, '#ff4466');
+    drawBranch(ctx, x1 + 50, yU2, x2, yU2B, 1 - pR2, '#4488ff');
+
+    // End labels with compound probabilities
+    const pathU1R = pU1 * pR1;
+    const pathU1B = pU1 * (1 - pR1);
+    const pathU2R = pU2 * pR2;
+    const pathU2B = pU2 * (1 - pR2);
+
+    ctx.font = '11px Inter, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#ff4466';
+    ctx.fillText(`Rossa (${pR1.toFixed(2)})`, x2 + 10, yU1R + 5);
+    ctx.fillStyle = '#8892b0';
+    ctx.fillText(`P = ${pathU1R.toFixed(3)}`, x2 + 10, yU1R + 20);
+
+    ctx.fillStyle = '#4488ff';
+    ctx.fillText(`Blu (${(1-pR1).toFixed(2)})`, x2 + 10, yU1B + 5);
+    ctx.fillStyle = '#8892b0';
+    ctx.fillText(`P = ${pathU1B.toFixed(3)}`, x2 + 10, yU1B + 20);
+
+    ctx.fillStyle = '#ff4466';
+    ctx.fillText(`Rossa (${pR2.toFixed(2)})`, x2 + 10, yU2R + 5);
+    ctx.fillStyle = '#8892b0';
+    ctx.fillText(`P = ${pathU2R.toFixed(3)}`, x2 + 10, yU2R + 20);
+
+    ctx.fillStyle = '#4488ff';
+    ctx.fillText(`Blu (${(1-pR2).toFixed(2)})`, x2 + 10, yU2B + 5);
+    ctx.fillStyle = '#8892b0';
+    ctx.fillText(`P = ${pathU2B.toFixed(3)}`, x2 + 10, yU2B + 20);
+
+    // Highlight: P(Rossa) total
+    const pR = pathU1R + pathU2R;
+    ctx.fillStyle = '#ffe600';
+    ctx.font = 'bold 13px Orbitron, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`P(Rossa) = ${pathU1R.toFixed(3)} + ${pathU2R.toFixed(3)} = ${pR.toFixed(3)}`, 350, 470);
+}
+
+function drawBranch(ctx, x1, y1, x2, y2, prob, color) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5 + prob * 2.5;
+    ctx.globalAlpha = 0.3 + prob * 0.7;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // Probability label on branch
+    const mx = (x1 + x2) / 2;
+    const my = (y1 + y2) / 2;
+    ctx.fillStyle = color;
+    ctx.font = 'bold 11px Orbitron, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(prob.toFixed(2), mx - 15, my);
+}
+
+// =================== INIT ===================
+updateUrn();
+updateVenn();
+updateTree();
+</script>
+
+</body>
+</html>

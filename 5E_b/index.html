@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probabilità Condizionata & Bayes — 5E Learning</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0e27;
+            --card-bg: rgba(255,255,255,0.05);
+            --cyan: #00f0ff;
+            --magenta: #ff00e5;
+            --yellow: #ffe600;
+            --green: #00ff88;
+            --orange: #ff6b35;
+            --purple: #a855f7;
+            --text: #e0e6ff;
+            --text-dim: #8892b0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-animation .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb:nth-child(1) { width: 400px; height: 400px; background: var(--cyan); top: -100px; left: -100px; animation-delay: 0s; }
+        .orb:nth-child(2) { width: 500px; height: 500px; background: var(--magenta); bottom: -150px; right: -150px; animation-delay: -7s; }
+        .orb:nth-child(3) { width: 300px; height: 300px; background: var(--yellow); top: 50%; left: 50%; animation-delay: -14s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(100px, -50px) scale(1.1); }
+            50% { transform: translate(-50px, 100px) scale(0.9); }
+            75% { transform: translate(50px, 50px) scale(1.05); }
+        }
+
+        /* Math symbols floating */
+        .math-float {
+            position: fixed;
+            font-size: 2rem;
+            color: rgba(255,255,255,0.05);
+            animation: mathRise 15s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+            font-family: 'Orbitron', monospace;
+        }
+
+        @keyframes mathRise {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.08; }
+            90% { opacity: 0.08; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        header .badge {
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+            color: var(--bg);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta), var(--yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .teacher-info {
+            margin-top: 20px;
+            padding: 15px 25px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: inline-block;
+        }
+
+        .teacher-info span {
+            color: var(--cyan);
+            font-weight: 600;
+        }
+
+        /* Phase cards grid */
+        .phases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+
+        .phase-card {
+            position: relative;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 35px 30px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text);
+            display: block;
+            overflow: hidden;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .phase-card:nth-child(1)::before { background: linear-gradient(90deg, var(--orange), var(--yellow)); }
+        .phase-card:nth-child(2)::before { background: linear-gradient(90deg, var(--cyan), #00c4ff); }
+        .phase-card:nth-child(3)::before { background: linear-gradient(90deg, var(--magenta), var(--purple)); }
+        .phase-card:nth-child(4)::before { background: linear-gradient(90deg, var(--green), var(--cyan)); }
+        .phase-card:nth-child(5)::before { background: linear-gradient(90deg, var(--yellow), var(--orange)); }
+
+        .phase-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .phase-card .step-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            opacity: 0.1;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+
+        .phase-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .phase-card h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .phase-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            opacity: 0.7;
+        }
+
+        .phase-card p {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .phase-card .arrow {
+            display: inline-block;
+            margin-top: 15px;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+
+        .phase-card:hover .arrow {
+            transform: translateX(8px);
+        }
+
+        .phase-card:nth-child(1) .arrow { color: var(--orange); }
+        .phase-card:nth-child(2) .arrow { color: var(--cyan); }
+        .phase-card:nth-child(3) .arrow { color: var(--magenta); }
+        .phase-card:nth-child(4) .arrow { color: var(--green); }
+        .phase-card:nth-child(5) .arrow { color: var(--yellow); }
+
+        /* Fun fact box */
+        .fun-fact {
+            background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(0,240,255,0.1));
+            border: 1px solid rgba(168,85,247,0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .fun-fact h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            color: var(--purple);
+            margin-bottom: 12px;
+        }
+
+        .fun-fact p {
+            color: var(--text-dim);
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        .fun-fact p em {
+            color: var(--yellow);
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        @media (max-width: 768px) {
+            .phases-grid {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-animation">
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+</div>
+
+<div class="container">
+    <header>
+        <div class="badge">📊 Matematica — 5ª Superiore</div>
+        <h1>Probabilità Condizionata & Teorema di Bayes</h1>
+        <p>Un percorso interattivo in 5 fasi per comprendere in profondità la probabilità condizionata e il Teorema di Bayes, con simulatori, diagrammi e problemi reali.</p>
+        <div class="teacher-info">
+            📚 Docente: <span>Prof. Lascala Marco</span> &nbsp;|&nbsp; 🎓 Istituto Tecnico
+        </div>
+    </header>
+
+    <div class="phases-grid">
+        <a href="engage.html" class="phase-card">
+            <span class="step-number">01</span>
+            <div class="icon">🎯</div>
+            <h2>ENGAGE</h2>
+            <h3>Coinvolgere</h3>
+            <p>Un test medico "infallibile" che inganna... Il paradosso che sfida il buon senso. Scopri perché la tua intuizione ti tradisce!</p>
+            <span class="arrow">Inizia il viaggio →</span>
+        </a>
+
+        <a href="explore.html" class="phase-card">
+            <span class="step-number">02</span>
+            <div class="icon">🔬</div>
+            <h2>EXPLORE</h2>
+            <h3>Esplorare</h3>
+            <p>Manipola urne, palline e diagrammi di Venn interattivi. Esplora come cambia la probabilità quando aggiungi informazioni.</p>
+            <span class="arrow">Esplora ora →</span>
+        </a>
+
+        <a href="explain.html" class="phase-card">
+            <span class="step-number">03</span>
+            <div class="icon">📖</div>
+            <h2>EXPLAIN</h2>
+            <h3>Spiegare</h3>
+            <p>Definizioni formali, formula di Bayes e dimostrazione visuale passo-passo. Tutto diventa chiaro con gli schemi ad albero animati.</p>
+            <span class="arrow">Comprendi →</span>
+        </a>
+
+        <a href="elaborate.html" class="phase-card">
+            <span class="step-number">04</span>
+            <div class="icon">🚀</div>
+            <h2>ELABORATE</h2>
+            <h3>Elaborare</h3>
+            <p>Filtro antispam, diagnosi medica, il problema di Monty Hall e casi giudiziari: Bayes cambia la vita reale!</p>
+            <span class="arrow">Applica →</span>
+        </a>
+
+        <a href="evaluate.html" class="phase-card">
+            <span class="step-number">05</span>
+            <div class="icon">🏆</div>
+            <h2>EVALUATE</h2>
+            <h3>Valutare</h3>
+            <p>Metti alla prova le tue competenze con quiz interattivi, problemi a trascinamento e sfide a tempo. Quanto hai imparato?</p>
+            <span class="arrow">Mettiti alla prova →</span>
+        </a>
+    </div>
+
+    <div class="fun-fact">
+        <h3>🤓 Lo sapevi?</h3>
+        <p>
+            Il Reverendo <em>Thomas Bayes</em> (1701–1761) era un pastore presbiteriano inglese che <em>non pubblicò mai</em> il suo teorema! Fu il suo amico <em>Richard Price</em> a trovare le carte di Bayes dopo la sua morte e a presentarle alla Royal Society nel 1763. Price era così impressionato che aggiunse persino un'introduzione religiosa, sostenendo che il teorema provava l'esistenza di un creatore! 😇
+            <br><br>
+            E c'è di più: <em>Pierre-Simon Laplace</em>, il vero "padre" del calcolo delle probabilità, arrivò indipendentemente alla stessa formula nel 1774, ma in una forma molto più generale e potente. Laplace la usò per stimare la massa di Saturno con una precisione che lasciò sbalorditi i contemporanei. 🪐
+        </p>
+    </div>
+</div>
+
+<footer>
+    Probabilità Condizionata & Teorema di Bayes — Prof. Marco Lascala — Istituto Tecnico, 5ª Superiore<br>
+    Percorso didattico basato sul modello 5E
+</footer>
+
+<script>
+    // Create floating math symbols
+    const symbols = ['P(A|B)', '∩', '∪', 'P(A)', 'Bayes', 'P(B|A)', 'Σ', '∫', 'Ω', '∅', '⊂', '∀'];
+    function createMathSymbol() {
+        const el = document.createElement('div');
+        el.className = 'math-float';
+        el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        el.style.left = Math.random() * 100 + '%';
+        el.style.animationDuration = (10 + Math.random() * 20) + 's';
+        el.style.animationDelay = Math.random() * 10 + 's';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 30000);
+    }
+    setInterval(createMathSymbol, 2000);
+    for (let i = 0; i < 8; i++) setTimeout(createMathSymbol, i * 500);
+</script>
+
+</body>
+</html>

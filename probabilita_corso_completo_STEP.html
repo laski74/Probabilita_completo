@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎲 Probabilità — Corso Completo STEP</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&family=Nunito:wght@400;700;900&display=swap');
+
+:root {
+  --ink: #1a1a2e;
+  --red: #e63946;
+  --yellow: #ffd166;
+  --blue: #118ab2;
+  --green: #06d6a0;
+  --purple: #8338ec;
+  --orange: #fb5607;
+  --paper: #fffbf0;
+  --panel: #ffffff;
+  --border: 3px solid #1a1a2e;
+  --shadow: 5px 5px 0 #1a1a2e;
+  --shadow-sm: 3px 3px 0 #1a1a2e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Comic Neue', 'Comic Sans MS', cursive;
+  background-color: var(--paper);
+  background-image: 
+    radial-gradient(circle, #c8c8c8 1px, transparent 1px);
+  background-size: 25px 25px;
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* ===== HEADER ===== */
+.site-header {
+  background: var(--yellow);
+  border-bottom: 4px solid var(--ink);
+  padding: 1.5rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    45deg, transparent, transparent 10px,
+    rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px
+  );
+}
+.site-header h1 {
+  font-family: 'Bangers', 'Impact', cursive;
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-shadow: 4px 4px 0 var(--red), 8px 8px 0 rgba(0,0,0,0.2);
+  line-height: 1;
+  position: relative;
+}
+.site-header .subtitle {
+  font-family: 'Bangers', cursive;
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+  color: var(--red);
+  margin-top: 0.3rem;
+  position: relative;
+}
+.dice-decor {
+  position: absolute; top: 10px; font-size: 3rem; opacity: 0.15;
+}
+.dice-decor:nth-child(1) { left: 20px; transform: rotate(-15deg); }
+.dice-decor:nth-child(2) { right: 20px; transform: rotate(20deg); }
+.dice-decor:nth-child(3) { left: 50%; transform: translateX(-50%) rotate(5deg); top: 5px; font-size: 2rem; }
+
+/* ===== INTRO BUBBLE ===== */
+.intro-section {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+.speech-bubble {
+  background: white;
+  border: var(--border);
+  border-radius: 20px;
+  padding: 1.5rem 2rem;
+  position: relative;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+}
+.speech-bubble::after {
+  content: '';
+  position: absolute; bottom: -20px; left: 40px;
+  width: 0; height: 0;
+  border-left: 20px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 20px solid var(--ink);
+}
+.speech-bubble.right::after { left: auto; right: 40px; }
+.speech-bubble p { line-height: 1.6; font-size: 1rem; }
+.speaker { font-family: 'Bangers', cursive; font-size: 1.2rem; color: var(--red); margin-bottom: 0.5rem; }
+.mascot-row { display: flex; align-items: flex-start; gap: 1.5rem; margin-bottom: 2rem; }
+.mascot { font-size: 4rem; flex-shrink: 0; }
+.paradox-box {
+  background: linear-gradient(135deg, #fff 60%, var(--yellow));
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  margin: 1.5rem 0;
+}
+.paradox-box h3 {
+  font-family: 'Bangers', cursive;
+  font-size: 1.6rem;
+  color: var(--purple);
+  margin-bottom: 0.8rem;
+  letter-spacing: 1px;
+}
+
+/* ===== NAVIGATION TABS ===== */
+.main-nav {
+  max-width: 900px;
+  margin: 0 auto 1.5rem;
+  padding: 0 1rem;
+  display: flex; gap: 0.5rem;
+}
+.tab-btn {
+  font-family: 'Bangers', cursive;
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+  padding: 0.8rem 2rem;
+  border: 3px solid var(--ink);
+  border-radius: 10px 10px 0 0;
+  cursor: pointer;
+  background: #ddd;
+  color: var(--ink);
+  transition: all 0.15s;
+  box-shadow: 3px 0 0 var(--ink);
+  position: relative; bottom: -3px;
+}
+.tab-btn.active { background: var(--yellow); box-shadow: 3px -3px 0 var(--ink); bottom: 0; z-index: 2; }
+.tab-btn:hover:not(.active) { background: #eee; transform: translateY(-2px); }
+
+/* ===== MAIN CONTENT ===== */
+.content-area {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ===== CHAPTER HEADINGS ===== */
+.chapter {
+  margin-bottom: 2rem;
+  background: var(--panel);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.chapter-header {
+  background: var(--blue);
+  color: white;
+  padding: 1rem 1.5rem;
+  display: flex; align-items: center; gap: 0.8rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.chapter-header:hover { background: #0d7a9d; }
+.chapter-header h2 {
+  font-family: 'Bangers', cursive;
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  flex: 1;
+}
+.chapter-header .ch-icon { font-size: 1.8rem; }
+.chapter-header .toggle-icon {
+  font-size: 1.5rem; transition: transform 0.3s;
+}
+.chapter-header.open .toggle-icon { transform: rotate(180deg); }
+.chapter-body {
+  padding: 1.5rem;
+  display: none;
+}
+.chapter-body.open { display: block; }
+
+/* Chapter color variants */
+.chapter:nth-child(2n) .chapter-header { background: var(--purple); }
+.chapter:nth-child(2n) .chapter-header:hover { background: #6a2cc4; }
+.chapter:nth-child(3n) .chapter-header { background: var(--red); }
+.chapter:nth-child(3n) .chapter-header:hover { background: #c0303b; }
+.chapter:nth-child(4n) .chapter-header { background: var(--green); color: var(--ink); }
+.chapter:nth-child(4n) .chapter-header:hover { background: #04b488; }
+.chapter:nth-child(5n) .chapter-header { background: var(--orange); }
+.chapter:nth-child(5n) .chapter-header:hover { background: #d94806; }
+
+/* ===== FORMULA BOX ===== */
+.formula-box {
+  background: var(--ink);
+  color: var(--yellow);
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  margin: 1rem 0;
+  font-size: 1.05rem;
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+.formula-box .mjx-container { color: var(--yellow) !important; }
+
+.def-box {
+  background: #f0f8ff;
+  border-left: 6px solid var(--blue);
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+}
+.def-box strong { color: var(--blue); }
+
+.tip-box {
+  background: #fff9e6;
+  border: 2px dashed var(--orange);
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 1rem 0;
+  position: relative;
+}
+.tip-box::before {
+  content: '💡';
+  position: absolute; top: -15px; left: 15px;
+  background: var(--paper); padding: 0 5px; font-size: 1.3rem;
+}
+
+.key-rule {
+  background: linear-gradient(135deg, var(--yellow), #ffeaa7);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-sm);
+}
+.key-rule .rule-label {
+  font-family: 'Bangers', cursive;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  color: var(--red);
+  margin-bottom: 0.5rem;
+}
+
+p { line-height: 1.7; margin-bottom: 0.8rem; }
+ul, ol { padding-left: 1.5rem; margin-bottom: 0.8rem; }
+li { margin-bottom: 0.4rem; line-height: 1.6; }
+
+/* ===== EXERCISES ===== */
+.ex-card {
+  background: var(--panel);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.ex-header {
+  display: flex; align-items: center; gap: 1rem;
+  background: var(--ink);
+  color: white;
+  padding: 0.8rem 1.2rem;
+}
+.ex-num {
+  font-family: 'Bangers', cursive;
+  font-size: 1.8rem;
+  color: var(--yellow);
+  letter-spacing: 2px;
+  flex-shrink: 0;
+}
+.ex-title {
+  font-family: 'Bangers', cursive;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  color: #ccc;
+}
+.ex-body { padding: 1.2rem 1.5rem; }
+.ex-text {
+  background: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+.ex-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.btn-guided {
+  font-family: 'Bangers', cursive;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  padding: 0.6rem 1.2rem;
+  background: var(--purple);
+  color: white;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s;
+}
+.btn-guided:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--ink); }
+.btn-theory {
+  font-family: 'Bangers', cursive;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  padding: 0.6rem 1.2rem;
+  background: var(--green);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s;
+}
+.btn-theory:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--ink); }
+.collapsible-content {
+  display: none;
+  border-top: 2px dashed #dee2e6;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+}
+.collapsible-content.open { display: block; }
+.guided-section {
+  background: linear-gradient(135deg, #f3e8ff, #ede0ff);
+  border: 2px solid var(--purple);
+  border-radius: 10px;
+  padding: 1.2rem;
+  margin-bottom: 0.8rem;
+}
+.guided-section h4 {
+  font-family: 'Bangers', cursive;
+  font-size: 1.1rem;
+  color: var(--purple);
+  margin-bottom: 0.8rem;
+  letter-spacing: 1px;
+}
+.theory-section {
+  background: linear-gradient(135deg, #e8f8f0, #d4f5e3);
+  border: 2px solid var(--green);
+  border-radius: 10px;
+  padding: 1.2rem;
+}
+.theory-section h4 {
+  font-family: 'Bangers', cursive;
+  font-size: 1.1rem;
+  color: #059669;
+  margin-bottom: 0.8rem;
+  letter-spacing: 1px;
+}
+.step { 
+  display: flex; gap: 0.8rem; margin-bottom: 0.8rem; align-items: flex-start;
+}
+.step-num {
+  background: var(--purple);
+  color: white;
+  font-family: 'Bangers', cursive;
+  font-size: 1.1rem;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
+  border: 2px solid var(--ink);
+}
+.result-box {
+  background: var(--yellow);
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  display: inline-block;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+  box-shadow: var(--shadow-sm);
+}
+.step-content { flex: 1; line-height: 1.6; }
+
+/* ===== FOOTER ===== */
+.site-footer {
+  text-align: center;
+  padding: 2rem;
+  background: var(--ink);
+  color: #aaa;
+  font-family: 'Comic Neue', cursive;
+  margin-top: 3rem;
+}
+.site-footer strong { color: var(--yellow); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .main-nav { overflow-x: auto; }
+  .tab-btn { font-size: 1.1rem; padding: 0.6rem 1rem; }
+  .mascot-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <span class="dice-decor">🎲</span>
+  <span class="dice-decor" style="right:20px">🎯</span>
+  <h1>Probabilità</h1>
+  <div class="subtitle">Corso Completo — Step by Step</div>
+</header>
+
+<!-- INTRO -->
+<div class="intro-section">
+  <div class="mascot-row">
+    <div class="mascot">🧑‍🏫</div>
+    <div>
+      <div class="speech-bubble">
+        <div class="speaker">Prof. Bestie™ dice:</div>
+        <p>Ciao bestie! Benvenuti al corso di probabilità! 🎲 Qui dentro troverete tutta la teoria spiegata in modo chiaro, più gli esercizi classici con svolgimento guidato. <strong>Attenzione:</strong> la probabilità NON è intuitiva! Il cervello umano non si è evoluto per fare probabilità... quindi niente &quot;vai di pancia&quot;! 🧠</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="paradox-box">
+    <h3>🌹 L'Indovinello della Bella Addormentata</h3>
+    <p>La domenica sera si lancia una moneta. La Bella Addormentata viene narcotizzata e perde la memoria. Se esce <strong>testa</strong>: si sveglia lunedì, viene riaddormentata, poi si sveglia martedì. Se esce <strong>croce</strong>: si sveglia solo il lunedì.</p>
+    <p>Quando si sveglia (senza sapere che giorno è), le viene chiesto: <em>"Qual è la probabilità che sia uscita testa domenica sera?"</em></p>
+    <p>🤔 <strong>1/2</strong> perché la moneta è equilibrata... oppure <strong>2/3</strong> perché è più probabile che sia stata svegliata per via della testa (2 risvegli su 3)?</p>
+    <p style="color:var(--red); font-weight:bold;">→ La risposta è ancora dibattuta tra i matematici! Lo vedremo nell'ultima lezione. 😄</p>
+  </div>
+</div>
+
+<!-- NAVIGATION -->
+<div class="main-nav">
+  <button class="tab-btn active" onclick="showTab('teoria')">📚 Teoria</button>
+  <button class="tab-btn" onclick="showTab('esercizi')">✏️ Esercizi</button>
+</div>
+
+<!-- CONTENT AREA -->
+<div class="content-area">
+
+<!-- ==================== TAB: TEORIA ==================== -->
+<div id="teoria" class="tab-panel active">
+
+<!-- CAPITOLO 1: Evento e Spazio Campionario -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🎯</span>
+    <h2>1 — Evento e Spazio Campionario</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <div class="def-box">
+      <strong>Evento (aleatorio):</strong> un'affermazione a cui si può assegnare univocamente un grado di verità a seguito di un'osservazione o misura. In pratica: qualcosa che puoi <em>verificare</em> se è successo o no.
+    </div>
+    <p>🐕 <em>Esempio di evento:</em> "Guardi questo video senza essere iscritto al canale" → verificabile!<br>
+    ❌ <em>Non è un evento:</em> "Dio esiste" → non verificabile matematicamente.</p>
+    <div class="def-box">
+      <strong>Spazio campionario:</strong> l'insieme di tutti i risultati possibili di un esperimento casuale (o aleatorio).
+    </div>
+    <p>Esempi di spazi campionari:</p>
+    <ul>
+      <li>🎲 Lancio di un dado a 6 facce: $\Omega = \{1, 2, 3, 4, 5, 6\}$</li>
+      <li>🎲🎲 Lancio di due dadi: $\Omega$ contiene 36 coppie possibili</li>
+      <li>🪙 Lancio di una moneta: $\Omega = \{T, C\}$</li>
+    </ul>
+    <div class="tip-box">
+      <p><strong>Evento e spazio campionario:</strong> ogni elemento (o sottoinsieme) dello spazio campionario è un evento, e ogni evento ha una probabilità associata.</p>
+    </div>
+    <p>Esempi: nel lancio di un dado, $\{3\}$ è un evento con $P = \tfrac{1}{6}$; $\{2,4,6\}$ (numero pari) è un evento con $P = \tfrac{3}{6} = \tfrac{1}{2}$; tutto $\Omega$ è un evento con $P = 1$.</p>
+  </div>
+</div>
+
+<!-- CAPITOLO 2: Definizione Classica -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">📐</span>
+    <h2>2 — Definizione Classica di Probabilità</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <div class="key-rule">
+      <div class="rule-label">⭐ Definizione Classica</div>
+      <div class="formula-box">
+        $$P(E) = \frac{\text{casi favorevoli}}{\text{casi possibili}}$$
+      </div>
+    </div>
+    <p><strong>Casi favorevoli:</strong> numero di situazioni in cui l'evento si verifica.<br>
+    <strong>Casi possibili:</strong> numero totale di esiti dell'esperimento.</p>
+    <p>Esempi:</p>
+    <ul>
+      <li>🎲 P(esce 3 su dado a 6 facce) $= \dfrac{1}{6}$</li>
+      <li>🪙 P(esce testa) $= \dfrac{1}{2}$</li>
+      <li>🩲 Cassetto con 4 mutande bucate e 6 intere: P(bucata) $= \dfrac{4}{10} = \dfrac{2}{5} = 0{,}4 = 40\%$</li>
+    </ul>
+    <div class="tip-box">
+      <p><strong>⚠️ Attenzione:</strong> la definizione classica vale <em>solo se i casi possibili sono equiprobabili</em> (hanno tutti la stessa probabilità). Se non lo sono, dobbiamo usare un'altra definizione!</p>
+    </div>
+    <p>Modi equivalenti di scrivere una probabilità: $\dfrac{2}{5}$ oppure $0{,}4$ oppure $40\%$.<br>
+    Per passare da decimale a percentuale: moltiplica per 100.</p>
+  </div>
+</div>
+
+<!-- CAPITOLO 3: Definizione Frequentista -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">📊</span>
+    <h2>3 — Definizione Frequentista</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <p>E se la moneta fosse <strong>truccata</strong>? Testa e croce non escono con la stessa probabilità → la definizione classica non funziona!</p>
+    <p>Soluzione: fare <em>tanti lanci</em> e osservare la <strong>frequenza relativa</strong>:</p>
+    <div class="formula-box">
+      $$P(E) = \lim_{n \to \infty} \frac{f_n}{n}$$
+      <p style="color:#aaa; font-size:0.9rem; margin-top:0.5rem;">dove $f_n$ = numero di volte che l'evento si verifica, $n$ = numero totale di tentativi</p>
+    </div>
+    <p>In pratica: quanti più tentativi fai, tanto più la frequenza si avvicina alla vera probabilità.</p>
+    <div class="tip-box">
+      <p>🔬 Non garantisce il risultato su ogni singola serie di tentativi (potrebbero esserci fluttuazioni), ma <em>in media</em> la frequenza converge alla probabilità.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CAPITOLO 4: Definizione Soggettiva -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">💰</span>
+    <h2>4 — Definizione Soggettiva</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <p>A volte né la definizione classica né quella frequentista funzionano. Esempio: <em>"Qual è la probabilità che la tipa che mi piace dica sì?"</em> 😅</p>
+    <p>Non posso ripetere l'esperimento mille volte (almeno, non con la stessa persona...).</p>
+    <div class="def-box">
+      <strong>Definizione Soggettiva:</strong> la probabilità è il prezzo che saresti disposto a pagare (tra 0 e €1) per ricevere €1 se l'evento si verifica, e €0 altrimenti. È il tuo <em>grado di fiducia</em> che l'evento accada.
+    </div>
+    <p>Esempi: "80% di probabilità" = sei disposto a scommettere €0,80 per guadagnare €1. "2% di probabilità" = ci scommetti solo €0,02.</p>
+    <p>È soggettiva, non universale, ma è pur sempre un modo legittimo di esprimere una probabilità! Usata ad es. in meteorologia: "Domani pioverà con probabilità 70%".</p>
+  </div>
+</div>
+
+<!-- CAPITOLO 5: Definizione Assiomatica -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🔢</span>
+    <h2>5 — Definizione Assiomatica</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <p>La definizione assiomatica non dice <em>cos'è</em> la probabilità, ma dice quali <strong>regole</strong> deve seguire. Come dire: non so cos'è un punto in geometria, ma so come si comporta!</p>
+    <div class="key-rule">
+      <div class="rule-label">📏 I 3 Assiomi della Probabilità (Kolmogorov)</div>
+      <ul style="margin-top:0.5rem">
+        <li><strong>Assioma 1:</strong> $0 \le P(E) \le 1$ &nbsp; (la probabilità è sempre tra 0 e 100%)</li>
+        <li><strong>Assioma 2:</strong> $P(\Omega) = 1$ &nbsp; (un evento certo ha probabilità 1)</li>
+        <li><strong>Assioma 3:</strong> Se A e B sono <em>incompatibili</em>, allora $P(A \cup B) = P(A) + P(B)$</li>
+      </ul>
+    </div>
+    <p><strong>Esempio — dado truccato:</strong> Il 6 ha probabilità doppia rispetto alle altre facce. Sia $x$ la probabilità di ciascuna delle facce 1–5. Allora:</p>
+    <div class="formula-box">
+      $$x + x + x + x + x + 2x = 1 \implies 7x = 1 \implies x = \frac{1}{7}$$
+      $$P(6) = 2x = \frac{2}{7}$$
+    </div>
+    <p>Abbiamo calcolato la probabilità usando solo gli assiomi, senza bisogno di sapere "cos'è" filosoficamente la probabilità!</p>
+  </div>
+</div>
+
+
+<!-- CAPITOLO 6: Eventi Indipendenti -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🔗</span>
+    <h2>6 — Eventi Indipendenti</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <div class="def-box">
+      <strong>Due eventi A e B sono indipendenti</strong> se l'accadere di uno non influenza in nessun modo la probabilità dell'altro.
+    </div>
+    <p>Esempi di eventi indipendenti:</p>
+    <ul>
+      <li>🎲 Due lanci successivi dello stesso dado (il dado non ha memoria!)</li>
+      <li>🃏 Pescare due carte da mazzi diversi</li>
+      <li>🦶 Alzarsi col piede destro e prendere 6 in matematica</li>
+    </ul>
+    <div class="key-rule">
+      <div class="rule-label">⭐ Regola d'Oro — Eventi Indipendenti</div>
+      <div class="formula-box">
+        $$P(A \cap B) = P(A) \cdot P(B)$$
+      </div>
+      <p>Se A e B sono indipendenti, la probabilità che accadano <strong>entrambi</strong> è il prodotto delle loro probabilità.</p>
+    </div>
+    <p><strong>Esempio:</strong> Lanci un dado due volte. P(esce 6 sia al primo che al secondo lancio)?</p>
+    <div class="formula-box">
+      $$P = \frac{1}{6} \cdot \frac{1}{6} = \frac{1}{36}$$
+    </div>
+  </div>
+</div>
+
+<!-- CAPITOLO 7: Eventi Incompatibili -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🚫</span>
+    <h2>7 — Eventi Incompatibili (o Mutuamente Esclusivi)</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <div class="def-box">
+      <strong>Due eventi A e B sono incompatibili</strong> se non possono verificarsi contemporaneamente: se accade uno, l'altro non può accadere.
+    </div>
+    <p>Esempi:</p>
+    <ul>
+      <li>🃏 Pescare il due di picche <em>o</em> l'asso di cuori come prima carta (non possono uscire insieme)</li>
+      <li>🎲 Ottenere un numero pari <em>o</em> dispari lanciando un dado</li>
+      <li>📺 Guardare questo video <em>e</em> non essere iscritto al canale 😅</li>
+    </ul>
+    <div class="key-rule">
+      <div class="rule-label">🥈 Regola d'Argento — Eventi Incompatibili</div>
+      <div class="formula-box">
+        $$P(A \cup B) = P(A) + P(B)$$
+      </div>
+      <p>Se A e B sono incompatibili, la probabilità che accada A <strong>o</strong> B è la somma delle loro probabilità.</p>
+    </div>
+    <div class="tip-box">
+      <p>⚠️ Occhio alla differenza: per eventi <em>incompatibili</em> si usa la <strong>somma</strong> ($\cup$, voglio che accada uno o l'altro). Per eventi <em>indipendenti</em> si usa il <strong>prodotto</strong> ($\cap$, voglio che accadano entrambi).</p>
+    </div>
+  </div>
+</div>
+
+<!-- CAPITOLO 8: Evento Contrario -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🔄</span>
+    <h2>8 — Evento Contrario</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <div class="def-box">
+      <strong>Evento contrario $\bar{E}$:</strong> l'evento che si verifica quando E <em>non</em> si verifica.
+    </div>
+    <div class="key-rule">
+      <div class="rule-label">🔄 Formula dell'Evento Contrario</div>
+      <div class="formula-box">
+        $$P(\bar{E}) = 1 - P(E)$$
+      </div>
+    </div>
+    <p>Intuitivamente: $P(\bar{E})$ = tutti i casi (100%) tranne quelli in cui accade E.</p>
+    <p><strong>Quando si usa?</strong> Spesso è più facile calcolare la probabilità dell'evento contrario, poi sottrarre da 1. Specialmente con la parola magica <strong>"almeno"</strong>!</p>
+    <p><strong>Esempio:</strong> P(non esce 1 lanciando un dado) $= 1 - P(\text{esce 1}) = 1 - \dfrac{1}{6} = \dfrac{5}{6}$</p>
+  </div>
+</div>
+
+<!-- CAPITOLO 9: Prove Ripetute -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🔁</span>
+    <h2>9 — Prove Ripetute</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <p>Le <strong>prove ripetute</strong> sono la stessa prova fatta più volte di fila (es: lanciare una moneta 6 volte).</p>
+    <p><strong>Metodo con schema a caselle:</strong></p>
+    <ol>
+      <li>Disegna una casella per ogni prova (distingui le prove!)</li>
+      <li>Calcola la probabilità di ogni singola casella</li>
+      <li>Moltiplica le probabilità (lanci indipendenti → prodotto)</li>
+      <li>Conta quante sequenze danno il risultato voluto (permutazioni con ripetizione)</li>
+      <li>Moltiplica per il numero di sequenze (sono incompatibili tra loro → le sommo tante volte)</li>
+    </ol>
+    <div class="formula-box">
+      $$P(\text{esattamente } k \text{ successi su } n \text{ prove}) = \underbrace{\frac{n!}{k!(n-k)!}}_{\text{sequenze possibili}} \cdot p^k \cdot (1-p)^{n-k}$$
+    </div>
+    <div class="tip-box">
+      <p>💡 Il coefficiente $\dfrac{n!}{k!(n-k)!}$ conta in quanti modi si possono disporre i $k$ successi (e $n-k$ fallimenti) nelle $n$ prove.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CAPITOLO 10: Parole Magiche -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">✨</span>
+    <h2>10 — Le Parole Magiche</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <p>Alcune parole nel testo degli esercizi sono <strong>segnali fondamentali</strong> su come procedere!</p>
+    <div class="key-rule">
+      <div class="rule-label">✨ "ALMENO" (o "al minimo")</div>
+      <p>Significa: <em>esattamente quel numero o più.</em><br>
+      "Almeno 5 successi su 6" = esattamente 5 <strong>oppure</strong> 6.</p>
+      <p><strong>Due strategie:</strong></p>
+      <ul>
+        <li>Se i casi da sommare sono pochi → calcolali uno per uno e somma (incompatibili)</li>
+        <li>Se i casi sono tanti → usa il <strong>complementare</strong>: $P(\text{almeno 1}) = 1 - P(\text{nessuno})$</li>
+      </ul>
+    </div>
+    <div class="key-rule" style="margin-top:1rem">
+      <div class="rule-label">✨ "AL PIÙ" (o "al massimo", "non più di")</div>
+      <p>Significa: <em>esattamente quel numero o meno.</em><br>
+      "Al più 1 errore su 4" = 0 errori <strong>oppure</strong> esattamente 1 errore.</p>
+      <p>Calcola separatamente i casi e somma (sono incompatibili).</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- CAPITOLO 11: Unione di eventi -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🔀</span>
+    <h2>11 — Probabilità dell'Unione</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <div class="def-box">
+      <strong>Unione $A \cup B$:</strong> l'evento che si verifica quando accade A, <em>o</em> accade B, <em>o</em> accadono entrambi. Non è solo "tutti e due"!
+    </div>
+    <div class="key-rule">
+      <div class="rule-label">🔀 Formula dell'Unione (Inclusione-Esclusione)</div>
+      <div class="formula-box">
+        $$P(A \cup B) = P(A) + P(B) - P(A \cap B)$$
+      </div>
+    </div>
+    <p>Perché si sottrae $P(A \cap B)$? Perché sommando P(A) + P(B) l'intersezione viene contata due volte → dobbiamo toglierla una volta.</p>
+    <p>Pensalo con i diagrammi di Venn: l'unione è l'area totale colorata, ma la zona sovrapposta (intersezione) non va contata due volte!</p>
+    <div class="tip-box">
+      <p>📌 Casi speciali:<br>
+      — Se A e B sono <strong>incompatibili</strong>: $P(A \cap B) = 0$ quindi $P(A \cup B) = P(A) + P(B)$<br>
+      — Se A e B sono <strong>indipendenti</strong>: $P(A \cap B) = P(A) \cdot P(B)$</p>
+    </div>
+    <p><strong>Come verificare se due eventi sono indipendenti o incompatibili:</strong> calcola $P(A \cap B)$ dalla formula dell'unione, poi:</p>
+    <ul>
+      <li>Se $P(A \cap B) = 0$ → incompatibili</li>
+      <li>Se $P(A \cap B) = P(A) \cdot P(B)$ → indipendenti</li>
+      <li>Altrimenti → correlati (né indipendenti né incompatibili)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- CAPITOLO 12: Diagramma d'albero -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🌳</span>
+    <h2>12 — Diagramma d'Albero</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <p>Il diagramma d'albero è uno <strong>strumento grafico</strong> utilissimo quando la probabilità di un evento dipende da un altro evento precedente.</p>
+    <p><strong>Come si costruisce:</strong></p>
+    <ol>
+      <li>Identifica la prima "grossa domanda" (primo livello di ramificazioni)</li>
+      <li>Per ogni ramo, aggiungi le domande successive (secondo livello)</li>
+      <li>Scrivi le probabilità sui rami</li>
+      <li>Aggiungi le <strong>"foglie"</strong>: alla fine di ogni percorso, scrivi il <em>prodotto</em> di tutte le probabilità lungo quel percorso</li>
+    </ol>
+    <div class="formula-box">
+      $$\text{foglia} = P(\text{ramo}_1) \times P(\text{ramo}_2) \times \cdots$$
+    </div>
+    <p><strong>Come si usano le foglie per rispondere:</strong></p>
+    <ul>
+      <li>Per un evento che passa per una sola foglia → usa direttamente quel valore</li>
+      <li>Per un evento compatibile con più foglie → somma quelle foglie (sono incompatibili tra loro!)</li>
+    </ul>
+    <div class="tip-box">
+      <p>⚠️ "Foglie" è un termine inventato dal prof del corso — sui libri non lo trovate! Sui libri si parla di probabilità composte o prodotti di rami.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CAPITOLO 13: Probabilità Condizionata -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🎯</span>
+    <h2>13 — Probabilità Condizionata</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <div class="def-box">
+      <strong>Probabilità condizionata $P(A \mid B)$:</strong> la probabilità che si verifichi l'evento A, <em>sapendo già</em> (dato per certo) che si è verificato B.
+    </div>
+    <div class="formula-box">
+      $$P(A \mid B) = \frac{P(A \cap B)}{P(B)}$$
+    </div>
+    <p>Si legge: "probabilità di A dato B".</p>
+    <p><strong>Differenza fondamentale:</strong></p>
+    <ul>
+      <li>$P(A \cap B)$ = probabilità che accadano A E B contemporaneamente</li>
+      <li>$P(A \mid B)$ = probabilità che accada A, <em>sapendo già</em> che B è accaduto (B è un fatto certo)</li>
+    </ul>
+    <div class="tip-box">
+      <p>📌 Se A e B sono indipendenti, allora $P(A \mid B) = P(A)$: sapere che B è accaduto non cambia la probabilità di A.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CAPITOLO 14: Teorema di Bayes -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🧪</span>
+    <h2>14 — Teorema di Bayes</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <p>Il <strong>Teorema di Bayes</strong> (si pronuncia "Beiz" all'inglese!) permette di calcolare probabilità condizionate "al contrario": sai P(test positivo | malato), ma vuoi P(malato | test positivo).</p>
+    <div class="key-rule">
+      <div class="rule-label">🧪 Teorema di Bayes</div>
+      <div class="formula-box">
+        $$P(A \mid B) = \frac{P(B \mid A) \cdot P(A)}{P(B)}$$
+      </div>
+    </div>
+    <p><strong>In pratica con il diagramma d'albero:</strong></p>
+    <div class="formula-box">
+      $$P(A \mid B) = \frac{\text{foglia favorevole}}{\text{somma di tutte le foglie con B}}$$
+    </div>
+    <p>Si usano solo le foglie in cui l'evento B si è verificato (i "casi possibili"), e come favorevole si prende la foglia in cui si verifica anche A.</p>
+    <div class="tip-box">
+      <p>⚠️ Paradosso dei test medici: anche con un test molto accurato (94%), se la malattia è rara (5%), essere positivi implica solo ~33% di probabilità di essere davvero malati! Questo perché ci sono molti più sani con falsi positivi che malati veri.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CAPITOLO 15: Teorema di Disintegrazione -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🍕</span>
+    <h2>15 — Teorema della Probabilità Totale (Disintegrazione)</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <p>Se $A_1, A_2, \ldots, A_n$ formano una <strong>partizione</strong> dello spazio campionario (non si sovrappongono e insieme coprono tutto), allora per qualsiasi evento B:</p>
+    <div class="key-rule">
+      <div class="rule-label">🍕 Teorema della Probabilità Totale</div>
+      <div class="formula-box">
+        $$P(B) = \sum_{i=1}^{n} P(B \mid A_i) \cdot P(A_i)$$
+      </div>
+    </div>
+    <p><strong>Cos'è una partizione?</strong> Un modo di dividere lo spazio campionario in pezzi che non si sovrappongono e che insieme coprono tutto. Esempio: le facce di un dado si dividono in {1,2,3} e {4,5,6}.</p>
+    <div class="tip-box">
+      <p>💡 In pratica, questo è esattamente quello che fai con il diagramma d'albero: la probabilità di B è la <em>somma delle foglie</em> in cui B si verifica. Il teorema di disintegrazione è la versione formale di questa procedura!</p>
+    </div>
+  </div>
+</div>
+
+<!-- CAPITOLO 16: Legge dei Grandi Numeri -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">📈</span>
+    <h2>16 — Legge dei Grandi Numeri</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <div class="def-box">
+      <strong>Legge dei grandi numeri:</strong> svolgendo molte prove ripetute, un evento E accade con frequenza sempre più vicina alla sua vera probabilità $P(E)$.
+    </div>
+    <p>In simboli: la <em>frequenza relativa</em> $\dfrac{f_n}{n}$ converge a $P(E)$ per $n \to \infty$.</p>
+    <p><strong>Esempio storico:</strong> Karl Pearson ha lanciato una moneta 24.000 volte — gli è uscita testa 12.012 volte, cioè il $50{,}05\%$. Vicinissimo al 50% teorico!</p>
+    <div class="tip-box">
+      <p>⚠️ La legge dei grandi numeri dice che <em>in media</em>, su molti tentativi, la frequenza converge alla probabilità. Non garantisce che in una singola serie di tentativi non si possano avere fluttuazioni grandi. In un universo parallelo, Pearson avrebbe potuto avere testa tutte le 24.000 volte... ma è molto improbabile!</p>
+    </div>
+    <div class="paradox-box" style="margin-top:1rem">
+      <h3>🌹 Bella Addormentata — La Soluzione (o non-soluzione)</h3>
+      <p>Entrambe le risposte (1/2 e 2/3) hanno un loro senso, dipende dal <em>punto di vista</em>:</p>
+      <ul>
+        <li><strong>1/2</strong> = punto di vista esterno: la moneta non truccata dà sempre 50%</li>
+        <li><strong>2/3</strong> = punto di vista della Bella: sapendo che è stata svegliata, è più probabile che sia uscita testa</li>
+      </ul>
+      <p>Il problema è una questione di probabilità condizionata vs non condizionata. I matematici ancora dibattono! 🤯</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- fine tab teoria -->
+
+
+<!-- ==================== TAB: ESERCIZI ==================== -->
+<div id="esercizi" class="tab-panel">
+
+<!-- ESERCIZIO 1 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 01</span>
+    <span class="ex-title">🍕 Pizze in Pizzeria (Calcolo Combinatorio)</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      Siete con sei amici in pizzeria. Nel menù ci sono 10 pizze. Se tutti quanti scelgono <strong>a caso</strong>, qual è la probabilità che vengano ordinate <strong>sei pizze tutte uguali</strong>?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g1')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't1')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g1" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content"><strong>Schema:</strong> $P = \dfrac{\text{casi favorevoli}}{\text{casi possibili}}$. Devo contare entrambi!</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content"><strong>Casi favorevoli</strong> (tutti e 6 ordinano la stessa pizza): ci sono esattamente <strong>10</strong> modi (tutti la margherita, tutti la capricciosa, ..., tutti la decima pizza).</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content"><strong>Casi possibili</strong>: ogni persona può scegliere tra 10 pizze, con ripetizione (la stessa pizza può essere scelta da più persone), e l'ordine conta (le persone sono distinte). Si tratta di <strong>disposizioni con ripetizione</strong>: $D_{n,k}^r = n^k = 10^6$.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <strong>Risultato:</strong>
+            $$P = \frac{10}{10^6} = \frac{1}{10^5} = 0{,}00001 = 0{,}001\%$$
+            <div class="result-box">$P = \dfrac{1}{100000} \approx 0{,}001\%$</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="t1" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: Disposizioni con Ripetizione</h4>
+        <p>Quando devo scegliere $k$ elementi da un insieme di $n$ elementi, dove:</p>
+        <ul>
+          <li>L'ordine <strong>conta</strong> (persona A prende la margherita ≠ persona B prende la margherita)</li>
+          <li>Lo stesso elemento può essere scelto più volte (stessa pizza per più persone)</li>
+        </ul>
+        <p>→ Si usano le <strong>disposizioni con ripetizione</strong>: $D_{n,k}^r = n^k$</p>
+        <p>Qui $n = 10$ (pizze), $k = 6$ (persone): $10^6 = 1.000.000$ ordinazioni totali.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESERCIZIO 2 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 02</span>
+    <span class="ex-title">🎲 Dado Truccato (Definizione Assiomatica)</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      Hai un dado truccato in cui la probabilità che esca 6 è <strong>doppia</strong> rispetto alla probabilità di tutte le altre facce. Qual è la probabilità che esca 6?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g2')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't2')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g2" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">Chiamo $x$ la probabilità di ciascuna delle facce 1, 2, 3, 4, 5. Allora $P(6) = 2x$ (il doppio).</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">Per il 2° e 3° assioma: la somma di tutte le probabilità deve essere 1 (evento certo), e le facce sono incompatibili tra loro:
+          $$x + x + x + x + x + 2x = 1 \implies 7x = 1$$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">$x = \dfrac{1}{7}$, quindi $P(6) = 2x = \dfrac{2}{7}$</div>
+        </div>
+        <div class="result-box">$P(6) = \dfrac{2}{7} \approx 28{,}6\%$</div>
+      </div>
+    </div>
+    <div id="t2" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: Assiomi di Kolmogorov</h4>
+        <p>La definizione assiomatica è potente perché non richiede di "capire cos'è la probabilità": basta seguire le tre regole. In questo esercizio abbiamo usato:</p>
+        <ul>
+          <li><strong>Assioma 2</strong>: $P(\Omega) = 1$ → la somma di tutte le probabilità fa 1</li>
+          <li><strong>Assioma 3</strong>: eventi incompatibili → sommo le probabilità</li>
+        </ul>
+        <p>Risultato: ho trovato la probabilità <em>senza sapere</em> a priori qual è, solo usando le regole!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESERCIZIO 3 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 03</span>
+    <span class="ex-title">🃏 Pesca Sequenziale (Indipendenti)</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      Da un mazzo di 40 carte peschi <strong>due carte in sequenza</strong> (prima una, poi un'altra senza rimettere la prima). Qual è la probabilità di pescare prima un asso e poi una figura?<br>
+      <em>(Nel mazzo: 4 assi, 12 figure — re, donna, fante per ogni seme — su 40 carte totali)</em>
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g3')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't3')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g3" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content"><strong>Prima pescata — asso:</strong> ci sono 4 assi su 40 carte. $P(\text{asso}) = \dfrac{4}{40} = \dfrac{1}{10}$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content"><strong>Seconda pescata — figura:</strong> ho già tolto un asso, restano 39 carte di cui 12 figure. $P(\text{figura}) = \dfrac{12}{39} = \dfrac{4}{13}$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">Le due pescate sono indipendenti (l'asso pescato non "attira" le figure) → moltiplico:
+          $$P = \frac{4}{40} \cdot \frac{12}{39} = \frac{48}{1560} = \frac{2}{65}$$</div>
+        </div>
+        <div class="result-box">$P = \dfrac{2}{65} \approx 3{,}1\%$</div>
+      </div>
+    </div>
+    <div id="t3" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: Dipendenza "tecnica" vs Indipendenza</h4>
+        <p>Tecnicamente, la seconda pescata <em>è</em> influenzata dalla prima (il numero di carte cambia). Tuttavia, il fatto di aver pescato un asso non aumenta né riduce la probabilità di pescare una figura: le figure non "si spostano" nel mazzo. Quindi trattiamo le pescate come indipendenti e usiamo il prodotto.</p>
+        <p>Questa è una sottile distinzione: la <em>numerosità</em> del mazzo cambia, ma la <em>composizione relativa</em> delle figure rimanenti non è influenzata da quale carta abbiamo pescato prima.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESERCIZIO 4 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 04</span>
+    <span class="ex-title">🐾 Festa degli Animali (Incompatibili)</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      Alla festa degli animali ci sono 4 cani, 3 cavalli e 5 volpi. Un animale viene estratto a caso. Qual è la probabilità che l'animale estratto sia <strong>un cane o un cavallo</strong>?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g4')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't4')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g4" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">Totale animali: $4 + 3 + 5 = 12$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">$P(\text{cane}) = \dfrac{4}{12}$ &ensp; $P(\text{cavallo}) = \dfrac{3}{12}$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">Essere cane e essere cavallo sono eventi <strong>incompatibili</strong> (un animale non può essere entrambe le cose) → sommo:
+          $$P(\text{cane o cavallo}) = \frac{4}{12} + \frac{3}{12} = \frac{7}{12}$$</div>
+        </div>
+        <div class="result-box">$P = \dfrac{7}{12} \approx 58{,}3\%$</div>
+      </div>
+    </div>
+    <div id="t4" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: Quando sommare le probabilità</h4>
+        <p>Si sommano le probabilità quando gli eventi sono <strong>incompatibili</strong> (non possono verificarsi insieme) e si vuole la probabilità che accada <em>uno O l'altro</em>.</p>
+        <p>In questo caso: "cane O cavallo" = l'animale estratto è uno dei due. Poiché nessun animale è contemporaneamente cane e cavallo, sono incompatibili → $P = P(\text{cane}) + P(\text{cavallo})$.</p>
+        <p>⚠️ Se invece volessimo P(cane E con la criniera), questi NON sono incompatibili e non possiamo semplicemente sommare!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESERCIZIO 5 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 05</span>
+    <span class="ex-title">📝 Due Verifiche (Evento Contrario)</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      La probabilità di prendere la sufficienza in matematica è 55%, in fisica è 40%. Fai una verifica di matematica e una di fisica. Qual è la probabilità di prendere <strong>due insufficienze</strong>?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g5')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't5')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g5" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">$P(\text{insuff. mat.}) = 1 - 55\% = 45\% = 0{,}45$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">$P(\text{insuff. fis.}) = 1 - 40\% = 60\% = 0{,}60$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">I voti nelle due materie sono indipendenti → moltiplico:
+          $$P(\text{2 insuff.}) = 0{,}45 \cdot 0{,}60 = 0{,}27$$</div>
+        </div>
+        <div class="result-box">$P = 27\%$</div>
+      </div>
+    </div>
+    <div id="t5" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: Evento Contrario + Indipendenza</h4>
+        <p>In questo esercizio combiniamo due concetti:</p>
+        <ol>
+          <li><strong>Evento contrario</strong>: $P(\text{insuff.}) = 1 - P(\text{suff.})$</li>
+          <li><strong>Indipendenza</strong>: il voto in matematica non influenza quello in fisica → prodotto</li>
+        </ol>
+        <p>Formalmente: siano M = "sufficienza in mat.", F = "sufficienza in fis.". Vogliamo $P(\bar{M} \cap \bar{F}) = P(\bar{M}) \cdot P(\bar{F})$ (per indipendenza).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ESERCIZIO 6 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 06</span>
+    <span class="ex-title">🪙 Moneta 6 Lanci — Esattamente 3 Teste</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      Lanci una moneta <strong>sei volte</strong>. Qual è la probabilità che esca testa <strong>esattamente tre volte</strong>?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g6')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't6')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g6" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content"><strong>Schema a 6 caselle.</strong> Considera una sequenza specifica, es: T T T C C C.<br>
+          $P(\text{questa sequenza}) = \left(\dfrac{1}{2}\right)^3 \cdot \left(\dfrac{1}{2}\right)^3 = \dfrac{1}{64}$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content"><strong>Quante sequenze diversi danno 3 T e 3 C?</strong><br>
+          Permutazioni di 6 elementi con 3 T uguali e 3 C uguali:
+          $$\frac{6!}{3! \cdot 3!} = \frac{720}{6 \cdot 6} = 20 \text{ sequenze}$$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">Le 20 sequenze sono <strong>incompatibili</strong> (ne può accadere solo una) → sommo 20 volte la stessa probabilità:
+          $$P = 20 \cdot \frac{1}{64} = \frac{20}{64} = \frac{5}{16}$$</div>
+        </div>
+        <div class="result-box">$P = \dfrac{5}{16} = 31{,}25\%$</div>
+      </div>
+    </div>
+    <div id="t6" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: Formula Binomiale</h4>
+        <p>Questo esercizio usa la distribuzione binomiale. La formula generale per avere esattamente $k$ successi in $n$ prove indipendenti, con probabilità $p$ di successo in ogni prova, è:</p>
+        $$P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}$$
+        <p>Dove $\binom{n}{k} = \dfrac{n!}{k!(n-k)!}$ è il coefficiente binomiale (le permutazioni con ripetizione).</p>
+        <p>Qui: $n=6$, $k=3$, $p=\dfrac{1}{2}$: $P = \binom{6}{3} \left(\dfrac{1}{2}\right)^6 = 20 \cdot \dfrac{1}{64} = \dfrac{5}{16}$ ✓</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESERCIZIO 7 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 07</span>
+    <span class="ex-title">🎲 Dado 5 Lanci — Uno e Sei Ciascuno Una Volta</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      Lanci cinque volte un dado a sei facce. Qual è la probabilità che 1 e 6 escano <strong>ognuno esattamente una volta</strong> (in qualunque ordine)?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g7')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't7')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g7" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content"><strong>Schema a 5 caselle.</strong> Una sequenza specifica: 1, 6, ✗, ✗, ✗ (le ultime 3 non sono né 1 né 6).<br>
+          $P(\text{casella con 1}) = \dfrac{1}{6}$, $P(\text{casella con 6}) = \dfrac{1}{6}$, $P(\text{casella non 1 né 6}) = \dfrac{4}{6}$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">Probabilità di questa sequenza specifica (lanci indipendenti → prodotto):
+          $$P = \frac{1}{6} \cdot \frac{1}{6} \cdot \frac{4}{6} \cdot \frac{4}{6} \cdot \frac{4}{6} = \frac{4^3}{6^5}$$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content"><strong>Quante sequenze?</strong> Devo disporre 5 caselle: una con 1, una con 6, tre "altre" uguali tra loro:
+          $$\frac{5!}{3!} = \frac{120}{6} = 20 \text{ sequenze}$$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">$$P_{\text{tot}} = 20 \cdot \frac{4^3}{6^5} = \frac{20 \cdot 64}{7776} = \frac{1280}{7776} = \frac{40}{243}$$</div>
+        </div>
+        <div class="result-box">$P = \dfrac{40}{243} \approx 16{,}4\%$</div>
+      </div>
+    </div>
+    <div id="t7" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: Permutazioni con più Gruppi</h4>
+        <p>In questo esercizio ci sono <strong>tre tipi</strong> di caselle: "1", "6", "altro". Il numero di sequenze con 1 casella "1", 1 casella "6", e 3 caselle "altro" è:</p>
+        $$\frac{5!}{1! \cdot 1! \cdot 3!} = \frac{120}{1 \cdot 1 \cdot 6} = 20$$
+        <p>Questo è il coefficiente multinomiale. Le caselle "altro" sono scambiate perché anche se i numeri potrebbero essere diversi (2, 3, 4 o 5), a noi interessa solo <em>dove si trovano</em> l'1 e il 6, non cosa c'è nelle altre caselle.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESERCIZIO 8 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 08</span>
+    <span class="ex-title">🧙 Gandalf — Almeno 5 Anelli su 6</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      Gandalf riesce a fare un anello di fumo con probabilità del <strong>70%</strong>. Se fa 6 sbuffi, qual è la probabilità che riesca a fare <strong>almeno 5 anelli</strong>?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g8')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't8')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g8" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content"><strong>Parola magica "almeno":</strong> almeno 5 su 6 = esattamente 5 <strong>oppure</strong> esattamente 6 anelli. Calcolo separatamente e sommo (sono incompatibili).</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content"><strong>Esattamente 5 anelli:</strong> 5 caselle con $p = \tfrac{7}{10}$, 1 casella con $1-p = \tfrac{3}{10}$.
+          Sequenze possibili: $\binom{6}{1} = 6$ (posizione dell'unico errore).
+          $$P(\text{5 anelli}) = 6 \cdot \left(\frac{7}{10}\right)^5 \cdot \frac{3}{10}$$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content"><strong>Esattamente 6 anelli:</strong> tutte le caselle con $p = \tfrac{7}{10}$.
+          $$P(\text{6 anelli}) = \left(\frac{7}{10}\right)^6$$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">Sommo (incompatibili):
+          $$P = 6 \cdot \frac{7^5 \cdot 3}{10^6} + \frac{7^6}{10^6} = \frac{7^5(6 \cdot 3 + 7)}{10^6} = \frac{7^5 \cdot 25}{10^6}$$
+          $$= \frac{16807 \cdot 25}{1000000} = \frac{420175}{1000000} \approx 0{,}420 = 42\%$$</div>
+        </div>
+        <div class="result-box">$P \approx 42\%$</div>
+      </div>
+    </div>
+    <div id="t8" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: "Almeno" con Pochi Casi</h4>
+        <p>Quando la parola "almeno" lascia pochi casi da considerare (qui solo 2: esattamente 5 e esattamente 6), la strategia più efficiente è <strong>calcolarli uno per uno e sommarli</strong>.</p>
+        <p>La strategia alternativa (evento complementare: $1 - P(\text{meno di 5})$) richiederebbe di calcolare P(0), P(1), P(2), P(3), P(4) — ben 5 casi! Molto più lavoroso in questo caso.</p>
+        <p>Regola pratica: se i casi "dall'almeno" sono pochi → calcolali direttamente. Se sono tanti → usa il complementare.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESERCIZIO 9 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 09</span>
+    <span class="ex-title">🃏 Tarocchi — Almeno Una Spada (Complementare)</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      In un mazzo di tarocchi ci sono <strong>78 carte</strong>, di cui 14 di spade. Ne peschi <strong>cinque</strong>. Qual è la probabilità di pescare <strong>almeno una carta di spade</strong>?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g9')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't9')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g9" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content"><strong>Parola magica "almeno 1":</strong> almeno 1 spada su 5 = 1, 2, 3, 4 o 5 spade. Troppi casi! Meglio usare il <strong>complementare</strong>: $P(\text{almeno 1 spada}) = 1 - P(\text{nessuna spada})$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content"><strong>P(nessuna spada):</strong> tutte e 5 le carte sono non-spade. Nel mazzo ci sono $78 - 14 = 64$ carte non-spade.
+          $$P = \frac{64}{78} \cdot \frac{63}{77} \cdot \frac{62}{76} \cdot \frac{61}{75} \cdot \frac{60}{74}$$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">Calcola con la calcolatrice: $P(\text{nessuna spada}) \approx 0{,}360$<br>
+          Quindi: $P(\text{almeno 1 spada}) = 1 - 0{,}360 \approx 0{,}640$</div>
+        </div>
+        <div class="result-box">$P \approx 64\%$</div>
+      </div>
+    </div>
+    <div id="t9" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: La Strategia del Complementare</h4>
+        <p>"Almeno 1" ha il contrario più semplice: "nessuno". Questo rende il calcolo molto più veloce.</p>
+        <p>Regola generale: $P(\text{almeno 1 successo}) = 1 - P(\text{zero successi})$</p>
+        <p>Confronto con l'esercizio di Gandalf: lì "almeno 5 su 6" aveva solo 2 casi da sommare → più rapido diretto. Qui "almeno 1 su 5" avrebbe 5 casi da sommare → più rapido con il complementare.</p>
+        <p>La scelta della strategia dipende da quanti casi rimangono dopo l'"almeno"!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ESERCIZIO 10 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 10</span>
+    <span class="ex-title">🧙‍♂️ Mago Merlino — Al Più Un Errore</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      Mago Merlino sbaglia in media <strong>un incantesimo su tre</strong>. Deve lanciare <strong>4 incantesimi</strong>. Qual è la probabilità che ne sbagli <strong>al più uno</strong>?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g10')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't10')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g10" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content"><strong>"Al più 1"</strong> = sbaglia 0 <strong>oppure</strong> sbaglia esattamente 1. Calcolo i due casi e sommo.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content"><strong>Caso: 0 errori.</strong> $p(\text{sbaglia}) = \tfrac{1}{3}$, $p(\text{corretto}) = \tfrac{2}{3}$. Tutte e 4 le caselle corrette:
+          $$P(\text{0 errori}) = \left(\frac{2}{3}\right)^4 = \frac{16}{81}$$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content"><strong>Caso: esattamente 1 errore.</strong> Sequenze possibili: $\binom{4}{1} = 4$ (posizione dell'errore).
+          $$P(\text{1 errore}) = 4 \cdot \frac{1}{3} \cdot \left(\frac{2}{3}\right)^3 = 4 \cdot \frac{8}{81} = \frac{32}{81}$$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">Sommo (incompatibili):
+          $$P = \frac{16}{81} + \frac{32}{81} = \frac{48}{81} = \frac{16}{27} \approx 59\%$$</div>
+        </div>
+        <div class="result-box">$P = \dfrac{16}{27} \approx 59\%$</div>
+      </div>
+    </div>
+    <div id="t10" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: "Al Più" nelle Prove Ripetute</h4>
+        <p>"Al più k" successi su $n$ prove significa: $P(X \le k) = P(X=0) + P(X=1) + \ldots + P(X=k)$</p>
+        <p>Qui k=1, quindi: $P(X \le 1) = P(X=0) + P(X=1)$. Solo due termini da calcolare!</p>
+        <p>Se k fosse grande (es. "al più 3 su 4"), converrebbe usare il complementare: $P(X \le 3) = 1 - P(X=4)$, che sarebbe un solo termine.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESERCIZIO 11 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 11</span>
+    <span class="ex-title">🚌 Autobus Infernale (Formula dell'Unione)</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      Prendi l'autobus. La probabilità che l'<strong>aria condizionata sia accesa a -40°</strong> è del 75%. La probabilità che l'<strong>autobus sia pieno come una scatola di sardine</strong> è del 60%. La probabilità che accadano <strong>entrambe le cose</strong> è del 40%. Qual è la probabilità che si verifichi <strong>almeno una</strong> delle due situazioni?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g11')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't11')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g11" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">Chiamo: A = "aria condizionata accesa", B = "autobus pieno".<br>
+          $P(A) = 75\%$, $P(B) = 60\%$, $P(A \cap B) = 40\%$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">Formula dell'unione:
+          $$P(A \cup B) = P(A) + P(B) - P(A \cap B) = 75\% + 60\% - 40\% = 95\%$$</div>
+        </div>
+        <div class="result-box">$P(A \cup B) = 95\%$</div>
+        <p style="margin-top:0.8rem">Se sali sull'autobus, hai il 95% di probabilità di beccarti almeno uno dei due "problemi". 😅</p>
+      </div>
+    </div>
+    <div id="t11" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: Perché si Sottrae l'Intersezione</h4>
+        <p>Immagina due cerchi sovrapposti (diagramma di Venn). Se sommi P(A) + P(B) stai contando la zona di sovrapposizione <strong>due volte</strong> (una per A, una per B). Sottraendo $P(A \cap B)$ la conti esattamente una volta.</p>
+        <p>Formalmente: $|A \cup B| = |A| + |B| - |A \cap B|$ (principio di inclusione-esclusione).</p>
+        <p>Attenzione: la formula $P(A \cup B) = P(A) + P(B)$ vale SOLO se A e B sono incompatibili, cioè $P(A \cap B) = 0$!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESERCIZIO 12 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 12</span>
+    <span class="ex-title">🍣 Sushi e Digestione (Indipendenti o No?)</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      Siano A = "il sabato sera mi sfondo di sushi" e B = "passo la domenica mattina sulla tazza". Si sa che $P(A) = \tfrac{2}{3}$, $P(B) = \tfrac{1}{4}$ e $P(A \cup B) = \tfrac{5}{6}$. Gli eventi A e B sono <strong>indipendenti, incompatibili, o nessuno dei due</strong>?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g12')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't12')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g12" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">Dalla formula dell'unione, isolo $P(A \cap B)$:
+          $$P(A \cap B) = P(A) + P(B) - P(A \cup B) = \frac{2}{3} + \frac{1}{4} - \frac{5}{6}$$
+          $$= \frac{8}{12} + \frac{3}{12} - \frac{10}{12} = \frac{1}{12}$$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content"><strong>Incompatibili?</strong> Se lo fossero, $P(A \cap B) = 0$. Ma $\tfrac{1}{12} \ne 0$ → <strong>non sono incompatibili</strong>.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content"><strong>Indipendenti?</strong> Se lo fossero, $P(A \cap B) = P(A) \cdot P(B) = \dfrac{2}{3} \cdot \dfrac{1}{4} = \dfrac{1}{6}$. Ma $\dfrac{1}{12} \ne \dfrac{1}{6}$ → <strong>non sono indipendenti</strong>.</div>
+        </div>
+        <div class="result-box">Gli eventi sono correlati (né indipendenti né incompatibili)! 🍣💀</div>
+      </div>
+    </div>
+    <div id="t12" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: Tre Categorie di Coppie di Eventi</h4>
+        <p>Due eventi A e B possono stare in tre relazioni:</p>
+        <ul>
+          <li><strong>Incompatibili:</strong> $P(A \cap B) = 0$. Non si verificano mai insieme.</li>
+          <li><strong>Indipendenti:</strong> $P(A \cap B) = P(A) \cdot P(B)$. Si influenzano a vicenda.</li>
+          <li><strong>Correlati (dipendenti non incompatibili):</strong> $0 < P(A \cap B) \ne P(A) \cdot P(B)$. Si influenzano: A aumenta o riduce la probabilità di B.</li>
+        </ul>
+        <p>In questo caso: $P(A \cap B) = \tfrac{1}{12} < \tfrac{1}{6} = P(A) \cdot P(B)$. Il fatto di mangiare sushi riduce leggermente la probabilità di stare male il giorno dopo rispetto a quello atteso per l'indipendenza (strano ma è quello che dicono i dati! 😄).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESERCIZIO 13 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 13</span>
+    <span class="ex-title">🐐 Capre con la Barba (Diagramma a Insiemi)</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      In un recinto ci sono capre nere o marroni, con o senza barba. Le nere sono il <strong>40%</strong>. Il <strong>15%</strong> delle capre è nero e con la barba. Il <strong>30%</strong> è marrone e senza barba. Scegliete una capra a caso: qual è la probabilità che <strong>abbia la barba</strong>?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g13')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't13')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g13" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">Costruisco un diagramma a insiemi: cerchio N (nere) e cerchio B (con barba), sovrapposti parzialmente.
+          <ul>
+            <li>$N \cap B$ (nere E con barba) = 15%</li>
+            <li>Nere totali = 40% → nere SENZA barba = 40% − 15% = 25%</li>
+            <li>Marroni e senza barba = 30%</li>
+          </ul></div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">Tutte le percentuali devono sommare al 100%:
+          $$15\% + 25\% + P(\text{marroni con barba}) + 30\% = 100\%$$
+          $$P(\text{marroni con barba}) = 30\%$$</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">P(ha la barba) = P(nere con barba) + P(marroni con barba):
+          $$P = 15\% + 30\% = 45\%$$</div>
+        </div>
+        <div class="result-box">$P(\text{ha la barba}) = 45\%$</div>
+      </div>
+    </div>
+    <div id="t13" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: Tecnica dei Diagrammi a Insiemi</h4>
+        <p>Quando un esercizio parla di due caratteristiche che si possono sovrapporre parzialmente (colore + barba), è utile disegnare un rettangolo (lo spazio campionario totale) con due insiemi sovrapposti all'interno.</p>
+        <p>Le regioni sono quattro: $A \cap B$, $A \cap \bar{B}$, $\bar{A} \cap B$, $\bar{A} \cap \bar{B}$. La loro somma deve fare 100%. Se ne conosci tre, la quarta si calcola per differenza!</p>
+        <p>Questa tecnica visiva è particolarmente efficace con alunni DSA perché riduce il carico di simboli algebrici.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ESERCIZIO 14 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 14</span>
+    <span class="ex-title">🍫 Cioccolatini (Diagramma d'Albero)</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      In una scatola: <strong>36%</strong> fondenti (75% con nocciola), <strong>64%</strong> al latte (50% con nocciola). Peschi un cioccolatino a caso. Calcola:
+      <ol style="margin-top:0.5rem">
+        <li>P(fondente)</li>
+        <li>P(fondente e con nocciola)</li>
+        <li>P(al latte e senza nocciola)</li>
+        <li>P(con nocciola) in generale</li>
+        <li>P(senza nocciola | fondente) — probabilità condizionata</li>
+      </ol>
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g14')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't14')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g14" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content"><strong>Diagramma d'albero (calcolo foglie = prodotti):</strong>
+          <ul>
+            <li>🍂 Fondente + nocciola: $36\% \times 75\% = 27\%$</li>
+            <li>🍂 Fondente + no nocciola: $36\% \times 25\% = 9\%$</li>
+            <li>🍂 Latte + nocciola: $64\% \times 50\% = 32\%$</li>
+            <li>🍂 Latte + no nocciola: $64\% \times 50\% = 32\%$</li>
+          </ul>
+          Verifica: $27 + 9 + 32 + 32 = 100\%$ ✓</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content"><strong>Risposte:</strong>
+          <ol>
+            <li>$P(\text{fondente}) = 36\%$ (direttamente dal ramo)</li>
+            <li>$P(\text{fond. e nocc.}) = 27\%$ (prima foglia)</li>
+            <li>$P(\text{latte e no nocc.}) = 32\%$ (quarta foglia)</li>
+            <li>$P(\text{nocc.}) = 27\% + 32\% = 59\%$ (somma foglie 1 e 3)</li>
+            <li>$P(\text{no nocc.} \mid \text{fond.}) = 25\%$ (probabilità condizionata, già scritta sul ramo!)</li>
+          </ol></div>
+        </div>
+        <div class="result-box">Foglie: 27% — 9% — 32% — 32%</div>
+      </div>
+    </div>
+    <div id="t14" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: Leggere l'Albero</h4>
+        <p>Il diagramma d'albero organizza le informazioni in modo visivo. La regola chiave è:</p>
+        <ul>
+          <li>Le <strong>foglie</strong> (prodotti lungo i rami) rappresentano eventi <em>atomici</em> (incompatibili tra loro)</li>
+          <li>Per trovare P(evento complesso), somma le foglie compatibili con quell'evento</li>
+          <li>Per una probabilità condizionata $P(A \mid B)$: considera <em>solo</em> le foglie in cui B è verificato, poi prendi la proporzione di quelle in cui è verificato anche A</li>
+        </ul>
+        <p>Nota: $P(\text{no nocciola} \mid \text{fondente}) = \dfrac{\text{foglia fond.+no nocc.}}{\text{fond.+nocc. + fond.+no nocc.}} = \dfrac{9\%}{36\%} = 25\%$ — ovvero il valore già scritto sul ramo! ✓</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESERCIZIO 15 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 15</span>
+    <span class="ex-title">🧪 Test Malattia Tozzite (Teorema di Bayes)</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      La <strong>Tozzite</strong> colpisce il <strong>5%</strong> della popolazione. Un test dà <strong>positivo al 94%</strong> se sei malato, e dà un <strong>falso positivo al 10%</strong> se sei sano. Fai il test e risulti positivo. Qual è la probabilità che tu sia <strong>davvero malato</strong>?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g15')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't15')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g15" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content"><strong>Albero:</strong> primo livello = sei malato (5%) o sano (95%)?<br>
+          Secondo livello = test positivo o negativo?</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content"><strong>Foglie:</strong>
+          <ul>
+            <li>🍂 Malato + Pos: $5\% \times 94\% = 4{,}7\%$</li>
+            <li>🍂 Malato + Neg: $5\% \times 6\% = 0{,}3\%$</li>
+            <li>🍂 Sano + Pos (falso +): $95\% \times 10\% = 9{,}5\%$</li>
+            <li>🍂 Sano + Neg: $95\% \times 90\% = 85{,}5\%$</li>
+          </ul></div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content"><strong>So che il test è positivo</strong> → uso solo le foglie con test positivo (foglie 1 e 3).
+          $$P(\text{malato} \mid \text{pos.}) = \frac{\text{foglia 1}}{\text{foglia 1 + foglia 3}} = \frac{4{,}7\%}{4{,}7\% + 9{,}5\%} = \frac{4{,}7}{14{,}2} \approx 33\%$$</div>
+        </div>
+        <div class="result-box">$P(\text{malato} \mid \text{positivo}) \approx 33\%$ 😱</div>
+        <p style="margin-top:0.8rem; color: var(--red)">Solo 1 probabilità su 3 di essere davvero malati, anche con test al 94%! Questo perché i sani sono molti di più dei malati, e anche il 10% di falsi positivi genera tanti "falsi allarmi".</p>
+      </div>
+    </div>
+    <div id="t15" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: Il Paradosso dei Test Medici</h4>
+        <p>Questo risultato sorprendente si chiama <strong>paradosso della prevalenza bassa</strong>. Con una malattia rara (5%), anche un test molto preciso (94%) dà molti falsi positivi rispetto ai veri positivi.</p>
+        <p>Formalmente, questo è il teorema di Bayes:</p>
+        $$P(M \mid +) = \frac{P(+ \mid M) \cdot P(M)}{P(+ \mid M) \cdot P(M) + P(+ \mid \bar{M}) \cdot P(\bar{M})} = \frac{0{,}94 \times 0{,}05}{0{,}94 \times 0{,}05 + 0{,}10 \times 0{,}95} \approx 33\%$$
+        <p>Implicazione pratica: i test medici vanno interpretati tenendo conto della <em>prevalenza</em> della malattia nella popolazione testata!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESERCIZIO 16 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 16</span>
+    <span class="ex-title">🍹 Festa di Orlando (Bayes Inverso)</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      A una festa: il <strong>40%</strong> beve Spritz Fritz, il <strong>60%</strong> beve succo d'ananas. Il <strong>75%</strong> di chi beve spritz ne prende un secondo giro; il <strong>30%</strong> di chi beve ananas ne prende un secondo giro. Orlando ha bevuto <strong>soltanto una volta</strong>. Qual è la probabilità che abbia bevuto <strong>il succo d'ananas</strong>?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g16')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't16')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g16" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content"><strong>Foglie dell'albero:</strong>
+          <ul>
+            <li>🍂 Spritz + 2° giro: $40\% \times 75\% = 30\%$</li>
+            <li>🍂 Spritz + 1 solo: $40\% \times 25\% = 10\%$ ← "soltanto una volta"</li>
+            <li>🍂 Ananas + 2° giro: $60\% \times 30\% = 18\%$</li>
+            <li>🍂 Ananas + 1 solo: $60\% \times 70\% = 42\%$ ← "soltanto una volta"</li>
+          </ul></div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content"><strong>So che ha bevuto una sola volta</strong> → uso solo le foglie 2 e 4.
+          $$P(\text{ananas} \mid \text{1 volta}) = \frac{\text{foglia 4}}{\text{foglia 2 + foglia 4}} = \frac{42\%}{10\% + 42\%} = \frac{42}{52} = \frac{21}{26} \approx 81\%$$</div>
+        </div>
+        <div class="result-box">$P(\text{ananas} \mid \text{1 volta}) \approx 81\%$ 🍍</div>
+      </div>
+    </div>
+    <div id="t16" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: Bayes "all'Indietro"</h4>
+        <p>Il teorema di Bayes permette di "ragionare all'indietro": conosco la conseguenza (ha bevuto una volta sola) e voglio risalire alla causa (ha bevuto l'ananas?).</p>
+        <p>Formalmente: $P(\text{ananas} \mid \text{1 volta}) = \dfrac{P(\text{1 volta} \mid \text{ananas}) \cdot P(\text{ananas})}{P(\text{1 volta})}$</p>
+        <p>Con il diagramma d'albero, il calcolo diventa immediato: le foglie fanno già il lavoro per noi!</p>
+        <p>Il denominatore $P(\text{1 volta}) = P(\text{spritz+1 volta}) + P(\text{ananas+1 volta}) = 10\% + 42\% = 52\%$ è calcolato usando il teorema della probabilità totale.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESERCIZIO 17 -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">ES 17</span>
+    <span class="ex-title">🍕 Pizzeria di Nino (Teorema di Disintegrazione)</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">
+      Da Nino Laguzzino lavorano tre pizzaioli:
+      <ul>
+        <li><strong>Morzo</strong>: prepara il 50% delle pizze, ne brucia $\tfrac{1}{4}$</li>
+        <li><strong>Felcioso</strong>: prepara il 30% delle pizze, ne brucia $\tfrac{1}{6}$</li>
+        <li><strong>Piedibrugo</strong>: prepara il 20% delle pizze, ne brucia il 10%</li>
+      </ul>
+      Ordini una pizza: qual è la probabilità che arrivi <strong>bruciata</strong>?
+    </div>
+    <div class="ex-buttons">
+      <button class="btn-guided" onclick="toggleContent(this, 'g17')">🔍 Svolgimento Guidato</button>
+      <button class="btn-theory" onclick="toggleContent(this, 't17')">📖 Approfondimento Teorico</button>
+    </div>
+    <div id="g17" class="collapsible-content">
+      <div class="guided-section">
+        <h4>🔍 Svolgimento Guidato</h4>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content"><strong>Foglie dell'albero:</strong>
+          <ul>
+            <li>🍂 Morzo + bruciata: $50\% \times 25\% = 12{,}5\%$</li>
+            <li>🍂 Morzo + ok: $50\% \times 75\% = 37{,}5\%$</li>
+            <li>🍂 Felcioso + bruciata: $30\% \times \frac{1}{6} = 5\%$</li>
+            <li>🍂 Felcioso + ok: $30\% \times \frac{5}{6} = 25\%$</li>
+            <li>🍂 Piedibrugo + bruciata: $20\% \times 10\% = 2\%$</li>
+            <li>🍂 Piedibrugo + ok: $20\% \times 90\% = 18\%$</li>
+          </ul></div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content"><strong>Foglie con bruciata:</strong> 1a, 3a, 5a. Le sommo (incompatibili):
+          $$P(\text{bruciata}) = 12{,}5\% + 5\% + 2\% = 19{,}5\%$$</div>
+        </div>
+        <div class="result-box">$P(\text{bruciata}) = 19{,}5\%$</div>
+        <p style="margin-top:0.8rem">Quasi 1 pizza su 5 arriva bruciata. Forse conviene farsi il cibo a casa. 🤔</p>
+      </div>
+    </div>
+    <div id="t17" class="collapsible-content">
+      <div class="theory-section">
+        <h4>📖 Approfondimento: Teorema di Disintegrazione</h4>
+        <p>Il <strong>teorema della probabilità totale</strong> (o "di disintegrazione") dice: se $\{A_1, A_2, \ldots, A_n\}$ è una partizione dello spazio campionario, allora:</p>
+        $$P(B) = \sum_{i=1}^{n} P(B \mid A_i) \cdot P(A_i)$$
+        <p>In questo esercizio: $A_1$ = pizza di Morzo, $A_2$ = di Felcioso, $A_3$ = di Piedibrugo; $B$ = pizza bruciata.</p>
+        $$P(\text{bruciata}) = P(\text{br.}|\text{Morzo}) \cdot P(\text{Morzo}) + P(\text{br.}|\text{Felcioso}) \cdot P(\text{Felcioso}) + P(\text{br.}|\text{Piedibrugo}) \cdot P(\text{Piedibrugo})$$
+        <p>Che è esattamente la somma delle tre foglie "bruciata" del diagramma d'albero!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- fine tab esercizi -->
+
+</div><!-- fine content-area -->
+
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <p>🎲 <strong>Probabilità — Corso Completo</strong> | Trascrizione da Step by Step</p>
+  <p style="margin-top:0.5rem; font-size:0.85rem">Materiale didattico per istituti tecnici | Con MathJax per le formule | Stile fumetto perché la matematica può essere divertente! 🚀</p>
+</footer>
+
+<!-- JAVASCRIPT -->
+<script>
+// Tab switching
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Toggle collapsible chapter bodies
+function toggleChapter(header) {
+  const body = header.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  header.classList.toggle('open', !isOpen);
+}
+
+// Toggle guided / theory sections in exercises
+function toggleContent(btn, id) {
+  const content = document.getElementById(id);
+  const isOpen = content.classList.contains('open');
+  content.classList.toggle('open', !isOpen);
+  if (!isOpen) {
+    btn.style.opacity = '0.7';
+    btn.textContent = btn.textContent.replace('▶', '') + ' ✕';
+  } else {
+    btn.style.opacity = '1';
+    // Restore original label
+    if (id.startsWith('g')) {
+      btn.textContent = '🔍 Svolgimento Guidato';
+    } else {
+      btn.textContent = '📖 Approfondimento Teorico';
+    }
+  }
+}
+
+// Open first chapter by default
+document.addEventListener('DOMContentLoaded', () => {
+  const firstHeader = document.querySelector('.chapter-header');
+  if (firstHeader) {
+    firstHeader.classList.add('open');
+    firstHeader.nextElementSibling.classList.add('open');
+  }
+});
+</script>
+</body>
+</html>

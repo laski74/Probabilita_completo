@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎲 Probabilità — Corso Completo</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;700;900&family=Open+Sans:wght@400;600;700&display=swap');
+
+:root {
+  --ink: #1a1a2e;
+  --red: #e63946;
+  --yellow: #ffd166;
+  --blue: #118ab2;
+  --green: #06d6a0;
+  --purple: #8338ec;
+  --orange: #fb5607;
+  --paper: #fffbf0;
+  --panel: #ffffff;
+  --border: 3px solid #1a1a2e;
+  --shadow: 5px 5px 0 #1a1a2e;
+  --shadow-sm: 3px 3px 0 #1a1a2e;
+}
+
+/* DSA MODE */
+body.dsa-mode {
+  font-family: 'Open Sans', Arial, sans-serif !important;
+  font-size: 1.08rem;
+  line-height: 1.9 !important;
+  letter-spacing: 0.02em;
+  background: #f5f5f0 !important;
+}
+body.dsa-mode p, body.dsa-mode li, body.dsa-mode td { line-height: 1.9; }
+body.dsa-mode .chapter-body { padding: 2rem !important; }
+body.dsa-mode .ex-body { padding: 1.8rem !important; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--paper);
+  background-image: radial-gradient(circle, #ccc 1px, transparent 1px);
+  background-size: 28px 28px;
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* HEADER */
+.site-header {
+  background: var(--yellow);
+  border-bottom: 4px solid var(--ink);
+  padding: 1.5rem 2rem 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(45deg, transparent, transparent 10px,
+    rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px);
+}
+.site-header h1 {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-shadow: 4px 4px 0 var(--red), 8px 8px 0 rgba(0,0,0,0.15);
+  line-height: 1;
+  position: relative;
+}
+.site-header .subtitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--red);
+  margin-top: 0.4rem;
+  position: relative;
+  letter-spacing: 1px;
+}
+.dsa-toggle-bar {
+  position: relative;
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: 0.6rem;
+  max-width: 960px; margin: 0.6rem auto 0;
+  padding: 0 1rem;
+}
+.dsa-btn {
+  font-family: 'Bangers', cursive;
+  letter-spacing: 1px;
+  font-size: 1rem;
+  padding: 0.4rem 1rem;
+  border: 2.5px solid var(--ink);
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.dsa-btn:hover { background: var(--ink); color: white; }
+body.dsa-mode .dsa-btn { background: var(--ink); color: var(--yellow); }
+
+/* TABS */
+.main-nav {
+  max-width: 960px;
+  margin: 1.5rem auto 0;
+  padding: 0 1rem;
+  display: flex; gap: 0.5rem; flex-wrap: wrap;
+}
+.tab-btn {
+  font-family: 'Bangers', cursive;
+  font-size: 1.3rem;
+  letter-spacing: 2px;
+  padding: 0.7rem 1.8rem;
+  border: 3px solid var(--ink);
+  border-radius: 10px 10px 0 0;
+  cursor: pointer;
+  background: #ddd;
+  color: var(--ink);
+  transition: all 0.15s;
+  box-shadow: 3px 0 0 var(--ink);
+  position: relative; bottom: -3px;
+}
+.tab-btn.active { background: var(--yellow); box-shadow: 3px -3px 0 var(--ink); bottom: 0; z-index: 2; }
+.tab-btn:hover:not(.active) { background: #eee; transform: translateY(-2px); }
+
+/* CONTENT */
+.content-area {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1rem 4rem;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* CHAPTER */
+.chapter {
+  margin-bottom: 1.5rem;
+  background: var(--panel);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.chapter-header {
+  background: var(--blue);
+  color: white;
+  padding: 1rem 1.5rem;
+  display: flex; align-items: center; gap: 0.8rem;
+  cursor: pointer; user-select: none;
+  transition: filter 0.15s;
+}
+.chapter-header:hover { filter: brightness(0.9); }
+.chapter-header h2 {
+  font-family: 'Bangers', cursive;
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+  flex: 1;
+}
+.chapter-header .ch-icon { font-size: 1.8rem; }
+.chapter-header .toggle-icon { font-size: 1.4rem; transition: transform 0.3s; }
+.chapter-header.open .toggle-icon { transform: rotate(180deg); }
+.chapter-body { padding: 1.5rem; display: none; }
+.chapter-body.open { display: block; }
+.chapter:nth-child(2) .chapter-header { background: var(--purple); }
+.chapter:nth-child(3) .chapter-header { background: var(--red); }
+.chapter:nth-child(4) .chapter-header { background: #0d7a5e; }
+.chapter:nth-child(5) .chapter-header { background: var(--orange); }
+.chapter:nth-child(6) .chapter-header { background: #c0303b; }
+.chapter:nth-child(7) .chapter-header { background: #6a2cc4; }
+.chapter:nth-child(8) .chapter-header { background: #0d7a9d; }
+
+/* BOXES */
+.formula-box {
+  background: var(--ink);
+  color: var(--yellow);
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  margin: 1rem 0;
+  font-size: 1.05rem;
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+  text-align: center;
+}
+.formula-box .MJX-TEX { color: var(--yellow) !important; }
+.def-box {
+  background: #f0f8ff;
+  border-left: 6px solid var(--blue);
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+}
+.def-box strong { color: var(--blue); }
+.warn-box {
+  background: #fff3cd;
+  border-left: 6px solid var(--orange);
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+}
+.warn-box strong { color: var(--orange); }
+.tip-box {
+  background: #e8f5e9;
+  border: 2px dashed var(--green);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+  position: relative;
+}
+.tip-box::before { content: '💡'; position: absolute; top: -14px; left: 12px; background: var(--paper); padding: 0 4px; font-size: 1.2rem; }
+.key-rule {
+  background: linear-gradient(135deg, var(--yellow), #ffeaa7);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin: 1.2rem 0;
+  box-shadow: var(--shadow-sm);
+}
+.key-rule .rule-label {
+  font-family: 'Bangers', cursive;
+  font-size: 1.1rem; letter-spacing: 1px;
+  color: var(--red); margin-bottom: 0.4rem;
+}
+.bayes-highlight {
+  background: linear-gradient(135deg, #fff0f6, #f3e5ff);
+  border: 3px solid var(--purple);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  margin: 1.2rem 0;
+  box-shadow: 4px 4px 0 var(--purple);
+}
+.bayes-highlight .rule-label {
+  font-family: 'Bangers', cursive;
+  font-size: 1.2rem; letter-spacing: 1px;
+  color: var(--purple); margin-bottom: 0.5rem;
+}
+.attention-box {
+  background: #fff0f0;
+  border: 3px solid var(--red);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin: 1.2rem 0;
+}
+.attention-box .rule-label {
+  font-family: 'Bangers', cursive;
+  font-size: 1.1rem; letter-spacing: 1px;
+  color: var(--red); margin-bottom: 0.4rem;
+}
+
+p { line-height: 1.75; margin-bottom: 0.9rem; }
+ul, ol { padding-left: 1.5rem; margin-bottom: 0.8rem; }
+li { margin-bottom: 0.4rem; line-height: 1.7; }
+h3 { font-family: 'Bangers', cursive; font-size: 1.2rem; letter-spacing: 1px; color: var(--blue); margin: 1.2rem 0 0.6rem; }
+h4 { font-weight: 700; color: var(--ink); margin: 0.8rem 0 0.4rem; }
+
+/* TREE DIAGRAM */
+.tree-container {
+  overflow-x: auto;
+  background: #fafafa;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+.tree-svg { width: 100%; min-width: 500px; }
+
+/* EXERCISES */
+.ex-card {
+  background: var(--panel);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.ex-header {
+  display: flex; align-items: center; gap: 1rem;
+  background: var(--ink); color: white;
+  padding: 0.8rem 1.2rem;
+}
+.ex-num {
+  font-family: 'Bangers', cursive;
+  font-size: 1.8rem;
+  color: var(--yellow); letter-spacing: 2px; flex-shrink: 0;
+}
+.ex-title { font-family: 'Bangers', cursive; font-size: 1rem; letter-spacing: 1px; color: #ccc; }
+.diff-badge {
+  margin-left: auto;
+  font-size: 0.75rem; font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px; letter-spacing: 1px;
+}
+.diff-base { background: var(--green); color: var(--ink); }
+.diff-med  { background: var(--orange); color: white; }
+.diff-hard { background: var(--red); color: white; }
+.ex-body { padding: 1.2rem 1.5rem; }
+.ex-text {
+  background: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem; margin-bottom: 1rem;
+  line-height: 1.7;
+}
+.hint-btn, .sol-btn {
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  margin-right: 0.5rem; margin-bottom: 0.5rem;
+  transition: all 0.15s;
+}
+.hint-btn { background: var(--yellow); }
+.hint-btn:hover { background: #f0c000; }
+.sol-btn { background: var(--green); color: var(--ink); }
+.sol-btn:hover { background: #04b488; }
+.hint-content, .sol-content {
+  display: none;
+  background: #f0fff4;
+  border: 2px solid var(--green);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 0.6rem;
+}
+.sol-content { background: #e8f4fd; border-color: var(--blue); }
+.hint-content.show, .sol-content.show { display: block; }
+
+/* SIMULATORS */
+.sim-card {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow);
+}
+.sim-card h3 {
+  font-family: 'Bangers', cursive;
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  color: var(--purple);
+  margin-bottom: 1rem;
+}
+.sim-controls { display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
+.sim-btn {
+  font-family: 'Bangers', cursive;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  padding: 0.6rem 1.4rem;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--blue);
+  color: white;
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: all 0.1s;
+}
+.sim-btn:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--ink); }
+.sim-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.sim-btn.red { background: var(--red); }
+.sim-btn.green { background: var(--green); color: var(--ink); }
+.sim-btn.purple { background: var(--purple); }
+.sim-output {
+  background: var(--ink);
+  color: var(--yellow);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  font-family: monospace;
+  font-size: 0.95rem;
+  min-height: 50px;
+  margin-top: 0.5rem;
+}
+.sim-select {
+  padding: 0.4rem 0.8rem;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.sim-input {
+  width: 70px;
+  padding: 0.4rem 0.6rem;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  font-size: 1rem;
+  text-align: center;
+}
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+}
+.stat-cell {
+  background: #f0f0f0;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  text-align: center;
+}
+.stat-cell .val {
+  font-family: 'Bangers', cursive;
+  font-size: 1.8rem;
+  color: var(--blue);
+  display: block;
+}
+.stat-cell .lbl { font-size: 0.8rem; color: #666; }
+
+/* BAYES VISUAL */
+.bayes-tree {
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+.bayes-row {
+  display: flex; align-items: stretch;
+  gap: 0;
+  margin-bottom: 0.6rem;
+}
+.bayes-node {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: center;
+  min-width: 120px;
+  display: flex; align-items: center; justify-content: center;
+}
+.bayes-arrow {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; color: #666; font-style: italic;
+  position: relative;
+}
+.bayes-arrow::before {
+  content: ''; position: absolute;
+  top: 50%; left: 5%; width: 90%; height: 2px;
+  background: #aaa;
+}
+.bayes-arrow span { background: white; padding: 0 4px; position: relative; z-index: 1; }
+
+/* Bayes calc */
+.bayes-calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+@media (max-width: 600px) {
+  .bayes-calc-grid { grid-template-columns: 1fr; }
+  .main-nav { gap: 0.3rem; }
+  .tab-btn { font-size: 1rem; padding: 0.5rem 1rem; }
+}
+.bayes-field label {
+  display: block; font-weight: 700; font-size: 0.9rem;
+  margin-bottom: 0.3rem; color: var(--purple);
+}
+.bayes-field input {
+  width: 100%; padding: 0.5rem 0.8rem;
+  border: 2px solid var(--purple);
+  border-radius: 8px; font-size: 1rem;
+}
+.bayes-result {
+  background: linear-gradient(135deg, #f3e5ff, #fff0f6);
+  border: 3px solid var(--purple);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+.bayes-result .big-num {
+  font-family: 'Bangers', cursive;
+  font-size: 3rem;
+  color: var(--purple);
+  display: block;
+}
+.progress-bar-wrap {
+  background: #eee; border-radius: 20px; height: 20px;
+  overflow: hidden; margin-top: 0.5rem;
+}
+.progress-bar-fill {
+  height: 100%; background: var(--purple);
+  border-radius: 20px;
+  transition: width 0.5s ease;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 0.75rem; font-weight: 700;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <h1>🎲 Probabilità</h1>
+  <div class="subtitle">Corso Completo &mdash; Teoria · Esercizi · Simulatori</div>
+  <div class="dsa-toggle-bar">
+    <span style="font-size:0.85rem; font-weight:700;">Modalità DSA:</span>
+    <button class="dsa-btn" onclick="toggleDSA()" title="Attiva/disattiva modalità testo spaziato per DSA">🅰️ DSA ON/OFF</button>
+  </div>
+</header>
+
+<!-- NAV TABS -->
+<nav class="main-nav">
+  <button class="tab-btn active" onclick="switchTab('teoria',this)">📚 TEORIA</button>
+  <button class="tab-btn" onclick="switchTab('esercizi',this)">✏️ ESERCIZI</button>
+  <button class="tab-btn" onclick="switchTab('simulatori',this)">🎮 SIMULATORI</button>
+</nav>
+
+<!-- ============================
+     TAB 1: TEORIA
+     ============================ -->
+<div class="content-area">
+<div id="teoria" class="tab-panel active">
+
+<!-- CAP 1 -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🎯</span>
+    <h2>Cap. 1 — Spazio Campionario ed Eventi</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body open">
+    <p>Immagina di lanciare un dado: sai che uscirà qualcosa tra 1 e 6, ma non sai esattamente cosa. Questo tipo di fenomeno — dove l'esito è incerto — si chiama <strong>esperimento aleatorio</strong> (dal latino <em>alea</em> = dado).</p>
+
+    <div class="def-box">
+      <strong>Definizione — Esperimento aleatorio:</strong> un fenomeno di cui non possiamo prevedere l'esito con certezza prima che avvenga. Esempi: lancio di un dado, estrazione di una carta, produzione di un pezzo difettoso.
+    </div>
+
+    <h3>Spazio campionario Ω (o U)</h3>
+    <p>L'insieme di <em>tutti i possibili esiti</em> di un esperimento aleatorio si chiama <strong>spazio campionario</strong>, indicato con Ω o U.</p>
+    <ul>
+      <li>Lancio di un dado a 6 facce: $\Omega = \{1, 2, 3, 4, 5, 6\}$</li>
+      <li>Lancio di una moneta: $\Omega = \{T, C\}$ (Testa, Croce)</li>
+      <li>Lancio di due dadi: $\Omega$ contiene $6 \times 6 = 36$ coppie ordinate</li>
+    </ul>
+
+    <h3>Evento</h3>
+    <div class="def-box">
+      <strong>Definizione — Evento:</strong> qualunque <em>sottoinsieme</em> dello spazio campionario. Un evento è <em>elementare</em> se contiene un solo esito.
+    </div>
+    <p>Ad esempio, nel lancio di un dado:</p>
+    <ul>
+      <li>$E = \{2, 4, 6\}$ = "esce un numero pari" → evento composto</li>
+      <li>$E = \{1\}$ = "esce 1" → evento elementare</li>
+      <li>$E = \Omega$ = "esce qualcosa" → evento <strong>certo</strong></li>
+      <li>$E = \emptyset$ = nessun esito → evento <strong>impossibile</strong></li>
+    </ul>
+
+    <h3>Evento complementare (contrario)</h3>
+    <p>L'evento contrario di $E$, indicato con $\bar{E}$ o $E^c$, si verifica se e solo se $E$ <em>non</em> si verifica.</p>
+    <div class="formula-box">
+      $$\bar{E} = \Omega \setminus E \qquad \Longrightarrow \qquad P(\bar{E}) = 1 - P(E)$$
+    </div>
+    <p><strong>Esempio:</strong> nel lancio di un dado, $E = \{1,2,3\}$ (esce un numero ≤ 3). Allora $\bar{E} = \{4,5,6\}$.</p>
+
+    <div class="tip-box">
+      <strong>Schema con diagramma ad albero:</strong> quando un esperimento si svolge in più fasi successive (es. 2 lanci di moneta), usa il diagramma ad albero per elencare tutti gli esiti. Per 2 lanci: $TT, TC, CT, CC$ → 4 esiti.
+    </div>
+  </div>
+</div>
+
+<!-- CAP 2 -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">📐</span>
+    <h2>Cap. 2 — Definizioni di Probabilità</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <h3>A) Definizione classica</h3>
+    <p>La definizione più antica, valida quando tutti gli esiti elementari sono <em>equiprobabili</em> (nessun esito è più "favorito" degli altri).</p>
+    <div class="formula-box">
+      $$P(E) = \frac{\text{casi favorevoli}}{\text{casi possibili}} = \frac{f}{u}$$
+    </div>
+    <p><strong>Esempio 1:</strong> probabilità che esca 3 lanciando un dado → casi favorevoli: 1, casi possibili: 6. Quindi $P = \frac{1}{6}$.</p>
+    <p><strong>Esempio 2:</strong> in un cassetto ci sono 4 mutande bucate e 6 intere. Probabilità di pescare una bucata: $P = \frac{4}{10} = \frac{2}{5} = 0.4 = 40\%$.</p>
+
+    <div class="warn-box">
+      <strong>⚠️ Attenzione:</strong> la definizione classica vale SOLO se i singoli casi sono equiprobabili. Se un dado è truccato, non puoi usarla!
+    </div>
+
+    <p>La probabilità è sempre un numero tra 0 e 1: $0 \le P(E) \le 1$.</p>
+    <ul>
+      <li>$P(E) = 0$ → evento impossibile</li>
+      <li>$P(E) = 1$ → evento certo</li>
+      <li>I valori si possono esprimere come frazione, decimale o percentuale.</li>
+    </ul>
+
+    <h3>B) Definizione statistica (frequentista)</h3>
+    <p>Quando non possiamo calcolare le probabilità "a priori" (perché gli esiti non sono equiprobabili, o non conosciamo la struttura), le stimiamo empiricamente ripetendo l'esperimento molte volte.</p>
+    <div class="formula-box">
+      $$P(E) \approx f(E) = \frac{m}{n}$$
+      <p style="color:#ccc; font-size:0.9rem; margin-top:0.5rem;">dove $m$ = numero di volte in cui si è verificato $E$, $n$ = numero totale di prove</p>
+    </div>
+    <p><strong>Legge empirica del caso:</strong> all'aumentare di $n$, la frequenza relativa $f(E)$ tende alla probabilità reale $P(E)$.</p>
+    <p><strong>Esempio:</strong> un'azienda farmaceutica testa un vaccino su 10.000 persone: 6.750 non si ammalano. Probabilità statistica di non ammalarsi: $\frac{6750}{10000} = 67.5\%$.</p>
+
+    <h3>C) Definizione soggettiva</h3>
+    <p>Misura il grado di fiducia personale che si attribuisce al verificarsi di un evento. Si formalizza come rapporto di scommessa:</p>
+    <div class="formula-box">
+      $$P(E) = \frac{\text{somma che si è disposti a pagare}}{\text{somma ricevuta se l'evento si verifica}}$$
+    </div>
+    <p>Utile quando non si può calcolare né teoricamente né sperimentalmente (es. vittoria di una squadra di calcio).</p>
+
+    <h3>D) Definizione assiomatica (Kolmogorov)</h3>
+    <p>Definizione rigorosa: una funzione $P$ sullo spazio campionario è una probabilità se soddisfa tre assiomi:</p>
+    <ol>
+      <li>$P(E) \ge 0$ per ogni evento $E$ (non-negatività)</li>
+      <li>$P(\Omega) = 1$ (l'evento certo ha probabilità 1)</li>
+      <li>Se $E_1 \cap E_2 = \emptyset$, allora $P(E_1 \cup E_2) = P(E_1) + P(E_2)$ (additività)</li>
+    </ol>
+    <p>Da questi assiomi si ricavano tutte le proprietà della probabilità viste sopra.</p>
+  </div>
+</div>
+
+<!-- CAP 3 -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🔗</span>
+    <h2>Cap. 3 — Operazioni tra Eventi</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <h3>Unione (A ∪ B)</h3>
+    <div class="def-box">
+      <strong>Unione:</strong> l'evento $A \cup B$ si verifica quando si verifica <em>almeno uno</em> tra $A$ e $B$ (A oppure B oppure entrambi).
+    </div>
+    <div class="formula-box">
+      $$P(A \cup B) = P(A) + P(B) - P(A \cap B)$$
+    </div>
+    <p>Il termine $-P(A \cap B)$ serve per non contare due volte gli esiti che appartengono a entrambi gli eventi.</p>
+    <p><strong>Esempio:</strong> sull'autobus: P(aria cond. accesa) = 75%, P(bus strapieno) = 60%, P(entrambe) = 40%.</p>
+    <p>$P(A \cup B) = 75\% + 60\% - 40\% = 95\%$</p>
+
+    <h3>Intersezione (A ∩ B)</h3>
+    <div class="def-box">
+      <strong>Intersezione:</strong> $A \cap B$ si verifica quando si verificano <em>contemporaneamente</em> $A$ e $B$.
+    </div>
+
+    <h3>Eventi incompatibili (mutuamente esclusivi)</h3>
+    <div class="def-box">
+      <strong>Incompatibili:</strong> $A$ e $B$ sono incompatibili se $A \cap B = \emptyset$, cioè non possono verificarsi contemporaneamente.
+    </div>
+    <p>In tal caso $P(A \cap B) = 0$, quindi:</p>
+    <div class="formula-box">
+      $$P(A \cup B) = P(A) + P(B) \qquad \text{(eventi incompatibili)}$$
+    </div>
+    <p><strong>Esempio:</strong> estraiamo una carta da un mazzo. $A$ = "è un 6", $B$ = "è una figura". Sono incompatibili (nessuna carta è sia 6 che figura).</p>
+
+    <div class="tip-box">
+      <strong>Trucco visivo:</strong> disegna sempre il diagramma di Venn! Se i cerchi non si sovrappongono → incompatibili. Se si sovrappongono → compatibili.
+    </div>
+
+    <h3>Formula per n eventi incompatibili (Probabilità totale — versione base)</h3>
+    <div class="formula-box">
+      $$P(E_1 \cup E_2 \cup \ldots \cup E_n) = P(E_1) + P(E_2) + \ldots + P(E_n)$$
+    </div>
+  </div>
+</div>
+
+<!-- CAP 4 -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">📊</span>
+    <h2>Cap. 4 — Prove Ripetute (Schema di Bernoulli)</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <p>Spesso un esperimento viene ripetuto $n$ volte <em>nelle stesse condizioni</em> (es: controllo di $n$ pezzi prodotti da una macchina). Vogliamo calcolare la probabilità di ottenere esattamente $k$ successi.</p>
+
+    <div class="def-box">
+      <strong>Condizioni dello schema di Bernoulli:</strong><br>
+      1) Ogni prova è identica e indipendente dalle altre<br>
+      2) Ogni prova ha solo due esiti: Successo (prob. $p$) o Insuccesso (prob. $q = 1-p$)<br>
+      3) $p$ rimane costante a ogni prova
+    </div>
+
+    <div class="formula-box">
+      $$P_{n,k} = \binom{n}{k} p^k q^{n-k} = \binom{n}{k} p^k (1-p)^{n-k}$$
+      <p style="color:#ccc; font-size:0.9rem; margin-top:0.5rem;">$n$ = numero di prove, $k$ = numero di successi voluti, $p$ = prob. di successo</p>
+    </div>
+
+    <p>Dove $\binom{n}{k} = \frac{n!}{k!(n-k)!}$ è il coefficiente binomiale che conta il numero di modi in cui i $k$ successi possono distribuirsi sulle $n$ prove.</p>
+
+    <h3>Esempio — Controllo qualità</h3>
+    <p>Una macchina produce pezzi difettosi con probabilità 3% ($p = 0.03$). Prendiamo 8 pezzi. Calcola:</p>
+    <ul>
+      <li><strong>Nessun pezzo difettoso ($k=0$):</strong> $P_{8,0} = \binom{8}{0}(0.03)^0(0.97)^8 \approx 78.37\%$</li>
+      <li><strong>Esattamente 1 pezzo difettoso ($k=1$):</strong> $P_{8,1} = \binom{8}{1}(0.03)^1(0.97)^7 \approx 19.38\%$</li>
+      <li><strong>Almeno 2 difettosi:</strong> $1 - P_{8,0} - P_{8,1} \approx 2.25\%$ (complementare!)</li>
+    </ul>
+
+    <div class="tip-box">
+      <strong>Trucco "almeno":</strong> per calcolare P("almeno k successi") usa quasi sempre il complementare:
+      $P(\text{almeno } k) = 1 - P(\text{meno di } k)$. Risparmia molti calcoli!
+    </div>
+
+    <h3>Esempio — Sushi e bagno</h3>
+    <p>$P(\text{sushi il sabato}) = 2/3$, $P(\text{bagno domenica}) = 1/4$. Sono indipendenti. Probabilità che accadano entrambi:</p>
+    <p>$P(A \cap B) = P(A) \cdot P(B) = \frac{2}{3} \cdot \frac{1}{4} = \frac{1}{6}$</p>
+    <p>La probabilità dell'unione $P(A \cup B) = 5/6$ è data. Verifica se sono indipendenti: dall'unione ricaviamo $P(A \cap B) = 2/3 + 1/4 - 5/6 = 1/12 \ne 1/6$ → <em>non sono indipendenti!</em></p>
+  </div>
+</div>
+
+<!-- CAP 5 — PROBABILITÀ CONDIZIONATA ⭐ -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">⭐</span>
+    <h2>Cap. 5 — Probabilità Condizionata ⭐</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body open">
+    <p>Questo è <strong>uno dei concetti più importanti e più fraintesi</strong> di tutta la probabilità. Leggi lentamente.</p>
+
+    <h3>Che cos'è la probabilità condizionata?</h3>
+    <p>A volte sappiamo già che un certo evento si è verificato, e questo cambia la probabilità di un altro evento. La <strong>probabilità condizionata</strong> $P(B|A)$ rappresenta la probabilità che si verifichi $B$, sapendo (dato per certo) che $A$ si è già verificato.</p>
+
+    <div class="def-box">
+      <strong>Si legge:</strong> $P(B|A)$ = "probabilità di $B$ dato $A$" = "probabilità di $B$ sapendo che $A$ è accaduto"
+    </div>
+
+    <h3>Esempio concreto — I cioccolatini</h3>
+    <p>Hai una scatola di cioccolatini: 36% fondenti con nocciola, 4% fondenti senza nocciola, 32% al latte con nocciola, 28% al latte senza nocciola. (Totale: 100%)</p>
+    <ul>
+      <li><strong>P(nocciola)</strong> = 36% + 32% = 68% ← probabilità "in generale"</li>
+      <li><strong>P(nocciola | fondente)</strong> = ? ← probabilità sapendo che è fondente</li>
+    </ul>
+    <p>Se so già che il cioccolatino è fondente, posso restringermi solo ai fondenti (40% del totale). Di questi, 36/40 = 90% hanno la nocciola. Quindi $P(\text{nocciola}|\text{fondente}) = 90\%$.</p>
+
+    <div class="attention-box">
+      <div class="rule-label">⚠️ ERRORE TIPICO da evitare</div>
+      <p>$P(B|A)$ NON è la stessa cosa di $P(A \cap B)$!</p>
+      <p>$P(A \cap B)$ = prob. che accadano ENTRAMBI (senza sapere nulla in partenza)</p>
+      <p>$P(B|A)$ = prob. di $B$ DATO CHE già sappiamo che $A$ è accaduto</p>
+    </div>
+
+    <h3>La formula della probabilità condizionata</h3>
+    <div class="formula-box">
+      $$P(B \mid A) = \frac{P(A \cap B)}{P(A)} \qquad \text{con } P(A) \ne 0$$
+    </div>
+    <p>Si ottiene "restringendo" lo spazio campionario al solo evento $A$: i casi possibili diventano solo quelli in $A$, e i casi favorevoli sono quelli in $A \cap B$.</p>
+
+    <h3>Dalla condizionata al prodotto logico</h3>
+    <p>Riarrangiando la formula otteniamo il <strong>Teorema della Probabilità del Prodotto</strong>:</p>
+    <div class="formula-box">
+      $$P(A \cap B) = P(A) \cdot P(B \mid A) = P(B) \cdot P(A \mid B)$$
+    </div>
+    <p>Questo è la base del diagramma ad albero: si moltiplica la probabilità del primo ramo per quella del secondo ramo condizionato.</p>
+
+    <h3>Esempio completo — Il sondaggio</h3>
+    <p>In un istituto ci sono 650 alunni: 425 femmine e 225 maschi. In 5ª B ci sono 24 alunni: 11 femmine e 13 maschi. Si estrae a sorte un alunno.</p>
+    <p>Qual è la probabilità che sia maschio, sapendo che proviene dalla 5ª B?</p>
+    <p>$E_1$ = "estratto dalla 5ª B", $\quad E_2$ = "è maschio"</p>
+    <p>$P(E_1) = \frac{24}{650}$, $\quad P(E_1 \cap E_2) = \frac{13}{650}$ (maschi in 5ª B)</p>
+    <div class="formula-box">
+      $$P(E_2 \mid E_1) = \frac{P(E_1 \cap E_2)}{P(E_1)} = \frac{13/650}{24/650} = \frac{13}{24} \approx 54.2\%$$
+    </div>
+  </div>
+</div>
+
+<!-- CAP 6 — INDIPENDENTI / DIPENDENTI ⭐ -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🔀</span>
+    <h2>Cap. 6 — Dipendenti e Indipendenti ⭐</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body open">
+    <h3>La distinzione fondamentale</h3>
+    <div class="def-box">
+      <strong>Indipendenti:</strong> $A$ e $B$ sono indipendenti se il verificarsi di uno non influenza la probabilità dell'altro.<br>
+      In simboli: $P(B|A) = P(B)$ e $P(A|B) = P(A)$.
+    </div>
+    <div class="def-box">
+      <strong>Dipendenti:</strong> $A$ e $B$ sono dipendenti se il verificarsi di uno cambia la probabilità dell'altro.<br>
+      In simboli: $P(B|A) \ne P(B)$.
+    </div>
+
+    <h3>Come riconoscerli</h3>
+    <p>Il criterio operativo più comodo è il seguente:</p>
+    <div class="key-rule">
+      <div class="rule-label">📌 REGOLA CHIAVE</div>
+      <p>$A$ e $B$ sono <strong>indipendenti</strong> se e solo se:</p>
+      $$P(A \cap B) = P(A) \cdot P(B)$$
+      <p>Altrimenti sono <strong>dipendenti</strong>.</p>
+    </div>
+
+    <h3>Esempio — Estrazione con e senza reimmissione</h3>
+    <p>Un sacchetto contiene 9 palline: 3 rosse, 2 blu, 4 gialle. Estraiamo 2 palline.</p>
+    <ul>
+      <li><strong>Con reimmissione:</strong> la prima pallina viene rimessa. Le due estrazioni sono <em>indipendenti</em>. $P(\text{rossa alla 2ª}) = \frac{3}{9}$ indipendentemente dalla prima.</li>
+      <li><strong>Senza reimmissione:</strong> la prima pallina non viene rimessa. Le due estrazioni sono <em>dipendenti</em>. Se alla 1ª esce rossa, alla 2ª: $P(\text{gialla}) = \frac{4}{8} \ne \frac{4}{9}$.</li>
+    </ul>
+
+    <h3>Esempio — Auto al controllo</h3>
+    <p>Un'auto ha probabilità 8% di avere difetti all'alimentazione e 3% di avere difetti ai freni. Se i due difetti sono <em>indipendenti</em>:</p>
+    <p>$P(\text{entrambi i difetti}) = P(A) \cdot P(B) = 0.08 \times 0.03 = 0.0024 = 0.24\%$</p>
+
+    <h3>Attenzione: indipendenti ≠ incompatibili!</h3>
+    <div class="attention-box">
+      <div class="rule-label">⚠️ NON CONFONDERE</div>
+      <table style="width:100%; border-collapse:collapse; font-size:0.95rem;">
+        <tr style="background:#f9d6d6;">
+          <th style="padding:0.5rem; text-align:left; border:1px solid #ccc;"></th>
+          <th style="padding:0.5rem; border:1px solid #ccc;">Incompatibili</th>
+          <th style="padding:0.5rem; border:1px solid #ccc;">Indipendenti</th>
+        </tr>
+        <tr>
+          <td style="padding:0.5rem; border:1px solid #ccc;"><strong>Condizione</strong></td>
+          <td style="padding:0.5rem; border:1px solid #ccc;">$A \cap B = \emptyset$</td>
+          <td style="padding:0.5rem; border:1px solid #ccc;">$P(A \cap B) = P(A)\cdot P(B)$</td>
+        </tr>
+        <tr>
+          <td style="padding:0.5rem; border:1px solid #ccc;"><strong>Significato</strong></td>
+          <td style="padding:0.5rem; border:1px solid #ccc;">Non possono accadere insieme</td>
+          <td style="padding:0.5rem; border:1px solid #ccc;">Non si influenzano</td>
+        </tr>
+        <tr>
+          <td style="padding:0.5rem; border:1px solid #ccc;"><strong>Esempio</strong></td>
+          <td style="padding:0.5rem; border:1px solid #ccc;">Esce pari, esce dispari</td>
+          <td style="padding:0.5rem; border:1px solid #ccc;">1° lancio, 2° lancio di un dado</td>
+        </tr>
+        <tr>
+          <td style="padding:0.5rem; border:1px solid #ccc;"><strong>Nota</strong></td>
+          <td style="padding:0.5rem; border:1px solid #ccc;">Se incompatibili e P > 0, sono dipendenti!</td>
+          <td style="padding:0.5rem; border:1px solid #ccc;">Possono accadere insieme</td>
+        </tr>
+      </table>
+    </div>
+
+    <h3>Formula per più eventi indipendenti</h3>
+    <p>Se $A_1, A_2, \ldots, A_n$ sono indipendenti:</p>
+    <div class="formula-box">
+      $$P(A_1 \cap A_2 \cap \ldots \cap A_n) = P(A_1) \cdot P(A_2) \cdot \ldots \cdot P(A_n)$$
+    </div>
+  </div>
+</div>
+
+<!-- CAP 7 — FORMULA DI DISINTEGRAZIONE -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🌳</span>
+    <h2>Cap. 7 — Formula delle Probabilità Totali</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body">
+    <h3>Il problema delle urne</h3>
+    <p>Spesso un evento $E$ può verificarsi attraverso più "percorsi" o "cause" alternative. Ad esempio: prima scelgo un'urna (causa), poi estraggo una pallina (effetto).</p>
+
+    <div class="def-box">
+      <strong>Partizione di Ω:</strong> gli eventi $E_1, E_2, \ldots, E_n$ formano una partizione dello spazio campionario se sono incompatibili a due a due e la loro unione è l'intero Ω.
+    </div>
+
+    <div class="formula-box">
+      $$P(E) = \sum_{i=1}^{n} P(E_i) \cdot P(E \mid E_i)$$
+      <p style="color:#ccc; font-size:0.9rem; margin-top:0.5rem;">Formula di disintegrazione (o delle probabilità totali)</p>
+    </div>
+
+    <h3>Esempio — Due urne e un dado</h3>
+    <p>Urna 1: 3 bianche, 2 nere. Urna 2: 4 bianche, 5 nere. Lancio un dado: se esce &lt; 3 uso l'urna 1, altrimenti l'urna 2.</p>
+    <ul>
+      <li>$P(E_1) = P(\text{dado} < 3) = \frac{2}{6} = \frac{1}{3}$</li>
+      <li>$P(E_2) = P(\text{dado} \ge 3) = \frac{4}{6} = \frac{2}{3}$</li>
+      <li>$P(\text{bianca} | E_1) = \frac{3}{5}$, $\quad P(\text{bianca} | E_2) = \frac{4}{9}$</li>
+    </ul>
+    <div class="formula-box">
+      $$P(\text{bianca}) = \frac{1}{3} \cdot \frac{3}{5} + \frac{2}{3} \cdot \frac{4}{9} = \frac{1}{5} + \frac{8}{27} = \frac{27 + 40}{135} = \frac{67}{135} \approx 49.6\%$$
+    </div>
+
+    <h3>Come usare il diagramma ad albero</h3>
+    <p>Il diagramma ad albero visualizza perfettamente questo processo:</p>
+    <ol>
+      <li>Ogni <em>ramo</em> rappresenta un evento condizionato</li>
+      <li>Ogni <em>foglia</em> (nodo terminale) ha probabilità = prodotto delle probabilità lungo il percorso</li>
+      <li>La probabilità dell'evento cercato = somma delle probabilità delle foglie favorevoli</li>
+    </ol>
+
+    <div class="bayes-tree" id="treeTotale" style="min-height:160px; text-align:center; padding:1.5rem;">
+      <svg viewBox="0 0 600 180" style="width:100%; max-width:600px;" class="tree-svg">
+        <!-- Root -->
+        <circle cx="50" cy="90" r="18" fill="#118ab2"/>
+        <text x="50" y="95" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Dado</text>
+        <!-- Branch E1 -->
+        <line x1="68" y1="75" x2="220" y2="40" stroke="#555" stroke-width="2"/>
+        <text x="140" y="48" text-anchor="middle" font-size="11" fill="#555">1/3</text>
+        <circle cx="238" cy="35" r="22" fill="#8338ec"/>
+        <text x="238" y="31" text-anchor="middle" fill="white" font-size="9">Urna 1</text>
+        <text x="238" y="44" text-anchor="middle" fill="white" font-size="9">3B,2N</text>
+        <!-- Urna1 → Bianca -->
+        <line x1="260" y1="30" x2="390" y2="15" stroke="#555" stroke-width="1.5"/>
+        <text x="325" y="14" text-anchor="middle" font-size="10" fill="#06d6a0">3/5</text>
+        <rect x="392" y="5" width="60" height="20" rx="5" fill="#06d6a0"/>
+        <text x="422" y="19" text-anchor="middle" font-size="10" font-weight="bold">Bianca</text>
+        <text x="472" y="14" font-size="9" fill="#555">1/5</text>
+        <!-- Urna1 → Nera -->
+        <line x1="260" y1="40" x2="390" y2="55" stroke="#555" stroke-width="1.5"/>
+        <text x="325" y="60" text-anchor="middle" font-size="10" fill="#e63946">2/5</text>
+        <rect x="392" y="45" width="60" height="20" rx="5" fill="#e63946"/>
+        <text x="422" y="59" text-anchor="middle" font-size="10" font-weight="bold" fill="white">Nera</text>
+        <text x="472" y="54" font-size="9" fill="#555">2/15</text>
+        <!-- Branch E2 -->
+        <line x1="68" y1="105" x2="220" y2="140" stroke="#555" stroke-width="2"/>
+        <text x="140" y="135" text-anchor="middle" font-size="11" fill="#555">2/3</text>
+        <circle cx="238" cy="145" r="22" fill="#fb5607"/>
+        <text x="238" y="141" text-anchor="middle" fill="white" font-size="9">Urna 2</text>
+        <text x="238" y="154" text-anchor="middle" fill="white" font-size="9">4B,5N</text>
+        <!-- Urna2 → Bianca -->
+        <line x1="260" y1="135" x2="390" y2="120" stroke="#555" stroke-width="1.5"/>
+        <text x="325" y="118" text-anchor="middle" font-size="10" fill="#06d6a0">4/9</text>
+        <rect x="392" y="110" width="60" height="20" rx="5" fill="#06d6a0"/>
+        <text x="422" y="124" text-anchor="middle" font-size="10" font-weight="bold">Bianca</text>
+        <text x="472" y="119" font-size="9" fill="#555">8/27</text>
+        <!-- Urna2 → Nera -->
+        <line x1="260" y1="155" x2="390" y2="165" stroke="#555" stroke-width="1.5"/>
+        <text x="325" y="172" text-anchor="middle" font-size="10" fill="#e63946">5/9</text>
+        <rect x="392" y="155" width="60" height="20" rx="5" fill="#e63946"/>
+        <text x="422" y="169" text-anchor="middle" font-size="10" font-weight="bold" fill="white">Nera</text>
+        <text x="472" y="164" font-size="9" fill="#555">10/27</text>
+      </svg>
+      <p style="font-size:0.85rem; color:#666; margin-top:0.5rem;">Le foglie in verde = percorsi favorevoli a "Bianca". Somma: 1/5 + 8/27 = 67/135</p>
+    </div>
+  </div>
+</div>
+
+<!-- CAP 8 — TEOREMA DI BAYES ⭐ -->
+<div class="chapter">
+  <div class="chapter-header" onclick="toggleChapter(this)">
+    <span class="ch-icon">🔬</span>
+    <h2>Cap. 8 — Teorema di Bayes ⭐⭐</h2>
+    <span class="toggle-icon">▼</span>
+  </div>
+  <div class="chapter-body open">
+    <p>Il Teorema di Bayes è il "boss finale" della probabilità. Affrontiamolo passo dopo passo.</p>
+
+    <h3>La domanda "al contrario"</h3>
+    <p>Con la formula delle probabilità totali abbiamo imparato a calcolare $P(\text{effetto})$ conoscendo le cause. Bayes risponde alla domanda inversa: <strong>dato che l'effetto si è verificato, qual è la probabilità che sia stato causato da $E_i$?</strong></p>
+
+    <div class="def-box">
+      <strong>Intuizione:</strong> sappiamo che la pallina estratta è bianca. Qual è la probabilità che venga dall'urna 1? Sappiamo che il test è positivo: qual è la probabilità di essere davvero malati?
+    </div>
+
+    <h3>Il Teorema di Bayes</h3>
+    <div class="bayes-highlight">
+      <div class="rule-label">🧪 TEOREMA DI BAYES</div>
+      <p>Siano $E_1, E_2, \ldots, E_n$ una partizione di Ω, e sia $E$ un evento con $P(E) > 0$. La probabilità che la causa sia stata $E_i$, dato che si è verificato $E$, è:</p>
+      $$P(E_i \mid E) = \frac{P(E_i) \cdot P(E \mid E_i)}{P(E)}$$
+      <p>dove $P(E) = \displaystyle\sum_{j=1}^{n} P(E_j) \cdot P(E \mid E_j)$ è la formula di disintegrazione.</p>
+    </div>
+
+    <h3>Esempio 1 — Il test medico</h3>
+    <p>La <em>tozzite</em> colpisce il 5% della popolazione. Il test per la tozzite:</p>
+    <ul>
+      <li>Se sei malato: il test dice "positivo" con probabilità 94%</li>
+      <li>Se non sei malato: il test dice "positivo" (falso positivo) con probabilità 10%</li>
+    </ul>
+    <p><strong>Domanda:</strong> se il test dice che sei positivo, qual è la probabilità di essere davvero malato?</p>
+    <p><strong>Intuizione sbagliata:</strong> "Il test è accurato al 94%, quindi se sono positivo sono malato al 94%!" ← SBAGLIATO!</p>
+
+    <h4>Soluzione con diagramma ad albero:</h4>
+    <div class="bayes-tree" style="padding:1rem; text-align:center;">
+      <svg viewBox="0 0 620 180" style="width:100%; max-width:620px;">
+        <circle cx="50" cy="90" r="20" fill="#118ab2"/>
+        <text x="50" y="95" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Inizio</text>
+        <!-- Malato -->
+        <line x1="70" y1="77" x2="210" y2="40" stroke="#555" stroke-width="2"/>
+        <text x="138" y="48" font-size="10" fill="#e63946" font-weight="bold">0.05 (5%)</text>
+        <rect x="212" y="25" width="65" height="28" rx="8" fill="#e63946"/>
+        <text x="244" y="38" text-anchor="middle" fill="white" font-size="10" font-weight="bold">MALATO</text>
+        <text x="244" y="49" text-anchor="middle" fill="white" font-size="9">M</text>
+        <!-- Malato → Positivo -->
+        <line x1="277" y1="32" x2="400" y2="18" stroke="#555" stroke-width="1.5"/>
+        <text x="338" y="15" font-size="10" fill="#06d6a0">0.94</text>
+        <rect x="402" y="8" width="85" height="22" rx="6" fill="#06d6a0"/>
+        <text x="444" y="23" text-anchor="middle" font-size="10" font-weight="bold">+ Positivo</text>
+        <text x="498" y="18" font-size="9" fill="#8338ec" font-weight="bold">0.047</text>
+        <!-- Malato → Negativo -->
+        <line x1="277" y1="45" x2="400" y2="55" stroke="#555" stroke-width="1.5"/>
+        <text x="338" y="56" font-size="10" fill="#999">0.06</text>
+        <rect x="402" y="45" width="85" height="22" rx="6" fill="#bbb"/>
+        <text x="444" y="60" text-anchor="middle" font-size="10">− Negativo</text>
+        <text x="498" y="58" font-size="9" fill="#999">0.003</text>
+        <!-- Non Malato -->
+        <line x1="70" y1="103" x2="210" y2="140" stroke="#555" stroke-width="2"/>
+        <text x="138" y="138" font-size="10" fill="#06d6a0" font-weight="bold">0.95 (95%)</text>
+        <rect x="212" y="128" width="65" height="28" rx="8" fill="#06d6a0"/>
+        <text x="244" y="141" text-anchor="middle" fill="white" font-size="10" font-weight="bold">SANO</text>
+        <text x="244" y="152" text-anchor="middle" fill="white" font-size="9">M̄</text>
+        <!-- Sano → Falso Positivo -->
+        <line x1="277" y1="133" x2="400" y2="118" stroke="#555" stroke-width="1.5"/>
+        <text x="338" y="115" font-size="10" fill="#e63946">0.10</text>
+        <rect x="402" y="108" width="85" height="22" rx="6" fill="#ffd166" stroke="#e63946" stroke-width="2"/>
+        <text x="444" y="123" text-anchor="middle" font-size="9" font-weight="bold">+ Falso Pos.</text>
+        <text x="498" y="118" font-size="9" fill="#e63946" font-weight="bold">0.095</text>
+        <!-- Sano → Negativo -->
+        <line x1="277" y1="152" x2="400" y2="162" stroke="#555" stroke-width="1.5"/>
+        <text x="338" y="165" font-size="10" fill="#999">0.90</text>
+        <rect x="402" y="152" width="85" height="22" rx="6" fill="#bbb"/>
+        <text x="444" y="167" text-anchor="middle" font-size="10">− Negativo</text>
+        <text x="498" y="162" font-size="9" fill="#999">0.855</text>
+      </svg>
+    </div>
+
+    <p>I casi positivi al test sono le due foglie verdi/gialle: <strong>0.047</strong> (malati positivi) e <strong>0.095</strong> (sani ma falso positivo).</p>
+    <p>Probabilità totale di un test positivo: $P(+) = 0.047 + 0.095 = 0.142$</p>
+
+    <div class="formula-box">
+      $$P(\text{malato} \mid +) = \frac{P(M) \cdot P(+ \mid M)}{P(+)} = \frac{0.05 \times 0.94}{0.142} = \frac{0.047}{0.142} \approx 33.1\%$$
+    </div>
+
+    <div class="warn-box">
+      <strong>Paradosso del test:</strong> anche con un test accurato al 94%, se sei positivo sei davvero malato solo nel 33% dei casi! Perché? Perché la malattia è rara (5%): i falsi positivi sono tanti (10% di un gruppo molto numeroso) rispetto ai veri positivi (94% di un gruppo piccolo).
+    </div>
+
+    <h3>Esempio 2 — Controllo qualità (esempio dal libro)</h3>
+    <p>Un'azienda usa 3 macchinari che producono rispettivamente 500, 1250 e 750 pezzi. Le percentuali di difettosi sono 5%, 8% e 6%. Si trova un pezzo difettoso: da quale macchinario viene?</p>
+    <ul>
+      <li>$P(M_1) = \frac{500}{2500} = 0.2$, $P(M_2) = 0.5$, $P(M_3) = 0.3$</li>
+      <li>$P(D|M_1) = 0.05$, $P(D|M_2) = 0.08$, $P(D|M_3) = 0.06$</li>
+    </ul>
+    <p>Formula di disintegrazione: $P(D) = 0.2 \times 0.05 + 0.5 \times 0.08 + 0.3 \times 0.06 = 0.01 + 0.04 + 0.018 = 0.068$</p>
+    <div class="formula-box">
+      $$P(M_1 \mid D) = \frac{0.2 \times 0.05}{0.068} = \frac{0.01}{0.068} \approx 14.7\%$$
+      $$P(M_2 \mid D) = \frac{0.5 \times 0.08}{0.068} = \frac{0.04}{0.068} \approx 58.8\%$$
+      $$P(M_3 \mid D) = \frac{0.3 \times 0.06}{0.068} = \frac{0.018}{0.068} \approx 26.5\%$$
+    </div>
+
+    <h3>Schema mentale per Bayes — Checklist</h3>
+    <div class="key-rule">
+      <div class="rule-label">🗺️ COME RISOLVERE CON BAYES</div>
+      <ol>
+        <li>Identifica le <strong>cause</strong> ($E_1, E_2, \ldots$) e l'<strong>effetto</strong> $E$</li>
+        <li>Scrivi le probabilità "a priori" $P(E_i)$ (probabilità delle cause prima di osservare l'effetto)</li>
+        <li>Scrivi le probabilità condizionate $P(E|E_i)$ (quanto è probabile l'effetto se la causa è $E_i$?)</li>
+        <li>Calcola $P(E)$ con la formula di disintegrazione</li>
+        <li>Applica Bayes: $P(E_i|E) = \frac{P(E_i) \cdot P(E|E_i)}{P(E)}$</li>
+        <li>Verifica: la somma di tutti $P(E_i|E)$ deve fare 1</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+</div><!-- end #teoria -->
+
+<!-- ============================
+     TAB 2: ESERCIZI
+     ============================ -->
+<div id="esercizi" class="tab-panel">
+
+<!-- Base -->
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">01</span>
+    <span class="ex-title">Spazio campionario e probabilità classica</span>
+    <span class="diff-badge diff-base">BASE</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">Un'urna contiene 4 palline rosse, 3 nere e 13 verdi. Estrai una pallina a caso. Calcola la probabilità che esca:
+    <br>a) una pallina nera &nbsp;&nbsp; b) una pallina rossa &nbsp;&nbsp; c) una pallina verde &nbsp;&nbsp; d) non una rossa &nbsp;&nbsp; e) una pallina gialla</div>
+    <button class="hint-btn" onclick="toggleEl('h01')">💡 Suggerimento</button>
+    <button class="sol-btn" onclick="toggleEl('s01')">✅ Soluzione</button>
+    <div class="hint-content" id="h01">In totale ci sono 4+3+13=20 palline. Usa la definizione classica: P(E) = casi favorevoli / casi totali.</div>
+    <div class="sol-content" id="s01">
+      Totale palline: 20.<br>
+      a) $P(\text{nera}) = \frac{3}{20} = 15\%$<br>
+      b) $P(\text{rossa}) = \frac{4}{20} = \frac{1}{5} = 20\%$<br>
+      c) $P(\text{verde}) = \frac{13}{20} = 65\%$<br>
+      d) $P(\overline{\text{rossa}}) = 1 - \frac{4}{20} = \frac{16}{20} = \frac{4}{5} = 80\%$<br>
+      e) $P(\text{gialla}) = \frac{0}{20} = 0$ → evento impossibile!
+    </div>
+  </div>
+</div>
+
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">02</span>
+    <span class="ex-title">Evento contrario e unione</span>
+    <span class="diff-badge diff-base">BASE</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">Si estrae una carta da un mazzo da 52 carte. Calcola la probabilità che esca:
+    <br>a) un 6 oppure una figura (J, Q, K)
+    <br>b) una carta di cuori oppure una carta di picche</div>
+    <button class="hint-btn" onclick="toggleEl('h02')">💡 Suggerimento</button>
+    <button class="sol-btn" onclick="toggleEl('s02')">✅ Soluzione</button>
+    <div class="hint-content" id="h02">Controlla se gli eventi sono compatibili o incompatibili. Per eventi incompatibili: P(A∪B) = P(A)+P(B).</div>
+    <div class="sol-content" id="s02">
+      a) "6" e "figura" sono <strong>incompatibili</strong> (nessuna carta è sia 6 che figura). Ci sono 4 sei e 12 figure.<br>
+      $P(\text{6 o figura}) = \frac{4}{52} + \frac{12}{52} = \frac{16}{52} = \frac{4}{13} \approx 30.8\%$<br><br>
+      b) "Cuori" e "Picche" sono <strong>incompatibili</strong>. Ci sono 13 cuori e 13 picche.<br>
+      $P(\text{cuori o picche}) = \frac{13}{52} + \frac{13}{52} = \frac{26}{52} = \frac{1}{2} = 50\%$
+    </div>
+  </div>
+</div>
+
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">03</span>
+    <span class="ex-title">Unione con intersezione (compatibili)</span>
+    <span class="diff-base diff-badge">BASE</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">Gli italiani scelgono le vacanze: P(mare) = 45%, P(montagna) = 27%, P(mare E montagna) = 5%.
+    <br>a) Qual è la probabilità di andare SOLO al mare (non in montagna)?
+    <br>b) Qual è la probabilità di non andare in montagna?
+    <br>c) Qual è la probabilità di non andare né al mare né in montagna?</div>
+    <button class="hint-btn" onclick="toggleEl('h03')">💡 Suggerimento</button>
+    <button class="sol-btn" onclick="toggleEl('s03')">✅ Soluzione</button>
+    <div class="hint-content" id="h03">Per c): usa il complementare dell'unione. P(né A né B) = 1 - P(A∪B). Per a): P(solo A) = P(A) - P(A∩B).</div>
+    <div class="sol-content" id="s03">
+      a) P(solo mare) = P(A) - P(A∩B) = 0.45 - 0.05 = 40%<br>
+      b) P(non montagna) = 1 - P(montagna) = 1 - 0.27 = 73%<br>
+      c) P(A∪B) = 0.45 + 0.27 - 0.05 = 0.67<br>
+      P(né A né B) = 1 - 0.67 = <strong>33%</strong>
+    </div>
+  </div>
+</div>
+
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">04</span>
+    <span class="ex-title">Prove ripetute — Schema di Bernoulli</span>
+    <span class="diff-badge diff-med">MEDIO</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">Un test è composto da 10 domande a scelta multipla (4 opzioni, 1 corretta). Alberto risponde a caso.
+    <br>a) Qual è la probabilità di rispondere correttamente a esattamente 3 domande?
+    <br>b) Qual è la probabilità di rispondere correttamente ad almeno 1 domanda?</div>
+    <button class="hint-btn" onclick="toggleEl('h04')">💡 Suggerimento</button>
+    <button class="sol-btn" onclick="toggleEl('s04')">✅ Soluzione</button>
+    <div class="hint-content" id="h04">p = 1/4 = 0.25, n = 10. Per b): usa il complementare: P(almeno 1) = 1 - P(nessuna corretta).</div>
+    <div class="sol-content" id="s04">
+      $p = 0.25$, $q = 0.75$, $n = 10$<br>
+      a) $P_{10,3} = \binom{10}{3}(0.25)^3(0.75)^7 = 120 \times 0.015625 \times 0.1335 \approx 25.0\%$<br><br>
+      b) $P(\text{almeno 1}) = 1 - P(\text{nessuna}) = 1 - \binom{10}{0}(0.25)^0(0.75)^{10}$<br>
+      $= 1 - (0.75)^{10} = 1 - 0.0563 \approx \mathbf{94.4\%}$
+    </div>
+  </div>
+</div>
+
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">05</span>
+    <span class="ex-title">Probabilità condizionata — Le capre</span>
+    <span class="diff-badge diff-med">MEDIO</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">In un recinto ci sono capre nere o marroni, con o senza barba. Sappiamo che:
+    <br>— il 40% delle capre è nero
+    <br>— il 15% delle capre è nero E con la barba
+    <br>— il 30% delle capre è marrone E senza barba
+    <br>Scegliendo una capra a caso, qual è la probabilità che abbia la barba?</div>
+    <button class="hint-btn" onclick="toggleEl('h05')">💡 Suggerimento</button>
+    <button class="sol-btn" onclick="toggleEl('s05')">✅ Soluzione</button>
+    <div class="hint-content" id="h05">Usa un diagramma di Venn. Le categorie sono: nere con barba, nere senza barba, marroni con barba, marroni senza barba. Le somme devono fare 100%.</div>
+    <div class="sol-content" id="s05">
+      - Nere con barba: 15%<br>
+      - Nere senza barba: 40% - 15% = 25%<br>
+      - Marroni senza barba: 30%<br>
+      - Marroni con barba: 100% - 15% - 25% - 30% = 30%<br><br>
+      P(con barba) = 15% + 30% = <strong>45%</strong>
+    </div>
+  </div>
+</div>
+
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">06</span>
+    <span class="ex-title">Probabilità condizionata — Quaderni</span>
+    <span class="diff-badge diff-med">MEDIO</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">In una scatola ci sono 24 quaderni: 15 a righe e 9 a quadretti. 14 quaderni hanno la copertina gialla, di cui 6 sono a righe. Si estrae un quaderno a caso.
+    <br>Calcola la probabilità che sia a righe, sapendo che la copertina è gialla.</div>
+    <button class="hint-btn" onclick="toggleEl('h06')">💡 Suggerimento</button>
+    <button class="sol-btn" onclick="toggleEl('s06')">✅ Soluzione</button>
+    <div class="hint-content" id="h06">$P(A|B) = P(A \cap B) / P(B)$. Identifica: A = "a righe", B = "copertina gialla".</div>
+    <div class="sol-content" id="s06">
+      $P(B) = \frac{14}{24} = \frac{7}{12}$ (copertina gialla)<br>
+      $P(A \cap B) = \frac{6}{24} = \frac{1}{4}$ (righe E copertina gialla)<br><br>
+      $P(A \mid B) = \frac{P(A \cap B)}{P(B)} = \frac{1/4}{7/12} = \frac{1}{4} \times \frac{12}{7} = \frac{3}{7} \approx 42.9\%$
+    </div>
+  </div>
+</div>
+
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">07</span>
+    <span class="ex-title">Indipendenti o dipendenti?</span>
+    <span class="diff-badge diff-med">MEDIO</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">Si lanciano due dadi. Considera gli eventi:
+    <br>A = "il primo dado mostra un numero pari"
+    <br>B = "la somma dei due dadi è 7"
+    <br>Determina se A e B sono indipendenti.</div>
+    <button class="hint-btn" onclick="toggleEl('h07')">💡 Suggerimento</button>
+    <button class="sol-btn" onclick="toggleEl('s07')">✅ Soluzione</button>
+    <div class="hint-content" id="h07">Calcola P(A), P(B), P(A∩B). Se P(A∩B) = P(A)·P(B) → indipendenti.</div>
+    <div class="sol-content" id="s07">
+      Spazio campionario: 36 coppie.<br>
+      P(A) = 18/36 = 1/2 (primo dado pari: {2,4,6}×{1,...,6})<br>
+      P(B) = 6/36 = 1/6 (somma 7: (1,6)(2,5)(3,4)(4,3)(5,2)(6,1))<br>
+      P(A∩B) = coppie con primo pari E somma 7: (2,5)(4,3)(6,1) → 3 coppie → 3/36 = 1/12<br><br>
+      Verifica: $P(A) \cdot P(B) = \frac{1}{2} \times \frac{1}{6} = \frac{1}{12}$<br>
+      Poiché $P(A \cap B) = P(A) \cdot P(B)$, gli eventi sono <strong>indipendenti</strong>! ✓
+    </div>
+  </div>
+</div>
+
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">08</span>
+    <span class="ex-title">Probabilità totale (disintegrazione)</span>
+    <span class="diff-badge diff-med">MEDIO</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">In un istituto ci sono 70 uomini e 50 donne. Il 90% degli uomini ha la patente, l'87% delle donne ce l'ha. Prendendo una persona a caso, qual è la probabilità che abbia la patente?</div>
+    <button class="hint-btn" onclick="toggleEl('h08')">💡 Suggerimento</button>
+    <button class="sol-btn" onclick="toggleEl('s08')">✅ Soluzione</button>
+    <div class="hint-content" id="h08">Usa la formula di disintegrazione. Cause: U = uomo (70/120), D = donna (50/120).</div>
+    <div class="sol-content" id="s08">
+      $P(U) = \frac{70}{120} = \frac{7}{12}$, $\quad P(D) = \frac{50}{120} = \frac{5}{12}$<br>
+      $P(\text{patente}|U) = 0.90$, $\quad P(\text{patente}|D) = 0.87$<br><br>
+      $P(\text{patente}) = P(U) \cdot P(\text{pat}|U) + P(D) \cdot P(\text{pat}|D)$<br>
+      $= \frac{7}{12} \times 0.90 + \frac{5}{12} \times 0.87$<br>
+      $= 0.525 + 0.3625 = \mathbf{0.8875 \approx 88.75\%}$
+    </div>
+  </div>
+</div>
+
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">09</span>
+    <span class="ex-title">Teorema di Bayes — Pezzi difettosi</span>
+    <span class="diff-badge diff-hard">DIFFICILE</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">Un'azienda usa 3 macchinari che producono rispettivamente 500, 1250 e 750 pezzi (totale 2500). Le percentuali di pezzi difettosi sono: M₁=5%, M₂=8%, M₃=6%.
+    <br>a) Qual è la probabilità che un pezzo scelto a caso sia difettoso?
+    <br>b) Se il pezzo è difettoso, qual è la probabilità che venga dal secondo macchinario?</div>
+    <button class="hint-btn" onclick="toggleEl('h09')">💡 Suggerimento</button>
+    <button class="sol-btn" onclick="toggleEl('s09')">✅ Soluzione</button>
+    <div class="hint-content" id="h09">Passo 1: calcola P(M₁), P(M₂), P(M₃) in base alla produzione. Passo 2: usa la formula di disintegrazione per P(D). Passo 3: applica Bayes per P(M₂|D).</div>
+    <div class="sol-content" id="s09">
+      $P(M_1)=\frac{500}{2500}=0.2$, $P(M_2)=0.5$, $P(M_3)=0.3$<br><br>
+      a) $P(D) = 0.2 \times 0.05 + 0.5 \times 0.08 + 0.3 \times 0.06$<br>
+      $= 0.010 + 0.040 + 0.018 = \mathbf{0.068 = 6.8\%}$<br><br>
+      b) $P(M_2 \mid D) = \frac{P(M_2) \cdot P(D \mid M_2)}{P(D)} = \frac{0.5 \times 0.08}{0.068} = \frac{0.04}{0.068} \approx \mathbf{58.8\%}$<br><br>
+      Verifica: $P(M_1|D)=14.7\%$, $P(M_2|D)=58.8\%$, $P(M_3|D)=26.5\%$ → somma = 100% ✓
+    </div>
+  </div>
+</div>
+
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">10</span>
+    <span class="ex-title">Bayes — Test medico</span>
+    <span class="diff-badge diff-hard">DIFFICILE</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">Una malattia colpisce il 2% della popolazione. Un test diagnostico ha sensibilità 95% (vero positivo se malato) e specificità 90% (vero negativo se sano). Un paziente risulta positivo al test. Qual è la probabilità che sia davvero malato?</div>
+    <button class="hint-btn" onclick="toggleEl('h10')">💡 Suggerimento</button>
+    <button class="sol-btn" onclick="toggleEl('s10')">✅ Soluzione</button>
+    <div class="hint-content" id="h10">Attenzione! Specificità 90% significa P(negativo|sano)=90%, quindi P(falso positivo|sano)=10%. Applica Bayes: P(malato|positivo) = P(M)·P(+|M) / P(+).</div>
+    <div class="sol-content" id="s10">
+      $P(M)=0.02$, $P(\bar{M})=0.98$<br>
+      $P(+|M)=0.95$ (sensibilità)<br>
+      $P(+|\bar{M})=0.10$ (falso positivo = 1 - specificità)<br><br>
+      $P(+) = 0.02 \times 0.95 + 0.98 \times 0.10 = 0.019 + 0.098 = 0.117$<br><br>
+      $$P(M \mid +) = \frac{0.02 \times 0.95}{0.117} = \frac{0.019}{0.117} \approx \mathbf{16.2\%}$$<br>
+      Il risultato sembra sorprendente! Solo 1 positivo su 6 è davvero malato, nonostante il test sembri molto accurato. Questo è il "paradosso del falso positivo".
+    </div>
+  </div>
+</div>
+
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">11</span>
+    <span class="ex-title">Bayes — Filtri antispam</span>
+    <span class="diff-badge diff-hard">DIFFICILE</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">Il 30% delle email ricevute è spam. Un filtro antispam:
+    <br>— rileva come spam il 95% delle email spam (vero positivo)
+    <br>— classifica erroneamente come spam il 2% delle email legittime (falso positivo)
+    <br>a) Qual è la probabilità che un'email classificata come spam sia davvero spam?
+    <br>b) Qual è la probabilità che un'email NON classificata come spam sia in realtà spam?</div>
+    <button class="hint-btn" onclick="toggleEl('h11')">💡 Suggerimento</button>
+    <button class="sol-btn" onclick="toggleEl('s11')">✅ Soluzione</button>
+    <div class="hint-content" id="h11">Per b): considera l'evento "classificata come legittima" e calcola P(spam|legittima). Ricorda: P(non spam|spam) = 1 - 0.95 = 0.05.</div>
+    <div class="sol-content" id="s11">
+      $P(S)=0.30$, $P(\bar{S})=0.70$<br>
+      $P(\text{flag}|S)=0.95$, $P(\text{flag}|\bar{S})=0.02$<br><br>
+      $P(\text{flag}) = 0.30\times0.95 + 0.70\times0.02 = 0.285 + 0.014 = 0.299$<br><br>
+      a) $P(S|\text{flag}) = \frac{0.30 \times 0.95}{0.299} = \frac{0.285}{0.299} \approx \mathbf{95.3\%}$ ← ottimo filtro!<br><br>
+      b) $P(\text{no flag}) = 1 - 0.299 = 0.701$<br>
+      $P(\text{no flag}|S) = 1 - 0.95 = 0.05$ (spam non rilevato)<br>
+      $P(S|\text{no flag}) = \frac{0.30\times0.05}{0.701} = \frac{0.015}{0.701} \approx \mathbf{2.1\%}$ ← basso, buon filtro!
+    </div>
+  </div>
+</div>
+
+<div class="ex-card">
+  <div class="ex-header">
+    <span class="ex-num">12</span>
+    <span class="ex-title">Estrazione senza reimmissione</span>
+    <span class="diff-badge diff-med">MEDIO</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-text">Un sacchetto contiene 6 palline rosse e 4 nere. Si estraggono 3 palline senza reimmissione. Calcola la probabilità di ottenere esattamente 2 palline rosse e 1 nera.</div>
+    <button class="hint-btn" onclick="toggleEl('h12')">💡 Suggerimento</button>
+    <button class="sol-btn" onclick="toggleEl('s12')">✅ Soluzione</button>
+    <div class="hint-content" id="h12">L'estrazione può avvenire in 3 ordini diversi: RRN, RNR, NRR. Calcola la probabilità di ciascun ordine con il teorema del prodotto (eventi dipendenti) e somma.</div>
+    <div class="sol-content" id="s12">
+      I tre ordini possibili (incompatibili):<br>
+      $P(RRN) = \frac{6}{10}\cdot\frac{5}{9}\cdot\frac{4}{8} = \frac{120}{720} = \frac{1}{6}$<br>
+      $P(RNR) = \frac{6}{10}\cdot\frac{4}{9}\cdot\frac{5}{8} = \frac{120}{720} = \frac{1}{6}$<br>
+      $P(NRR) = \frac{4}{10}\cdot\frac{6}{9}\cdot\frac{5}{8} = \frac{120}{720} = \frac{1}{6}$<br><br>
+      $P(\text{2 rosse, 1 nera}) = \frac{1}{6}+\frac{1}{6}+\frac{1}{6} = \frac{3}{6} = \mathbf{50\%}$<br><br>
+      <em>Alternativa con combinazioni:</em> $\frac{\binom{6}{2}\binom{4}{1}}{\binom{10}{3}} = \frac{15\times4}{120} = \frac{60}{120} = 50\%$ ✓
+    </div>
+  </div>
+</div>
+
+</div><!-- end #esercizi -->
+
+<!-- ============================
+     TAB 3: SIMULATORI
+     ============================ -->
+<div id="simulatori" class="tab-panel">
+
+<!-- SIM 1 — DADO/MONETA -->
+<div class="sim-card">
+  <h3>🎲 Simulatore Dado & Moneta</h3>
+  <p>Lancia il dado o la moneta più volte e osserva come la frequenza relativa si avvicina alla probabilità teorica (Legge dei Grandi Numeri).</p>
+  <div class="sim-controls">
+    <select class="sim-select" id="simType">
+      <option value="dado6">Dado a 6 facce</option>
+      <option value="dado12">Dado a 12 facce</option>
+      <option value="moneta">Moneta</option>
+    </select>
+    <button class="sim-btn" onclick="simLancia(1)">1 lancio</button>
+    <button class="sim-btn" onclick="simLancia(10)">10 lanci</button>
+    <button class="sim-btn" onclick="simLancia(100)">100 lanci</button>
+    <button class="sim-btn red" onclick="simReset()">🔄 Reset</button>
+  </div>
+  <div class="stat-grid" id="simStatGrid"></div>
+  <div class="sim-output" id="simOut">Premi un pulsante per cominciare...</div>
+</div>
+
+<!-- SIM 2 — PROB CONDIZIONATA VISIVA -->
+<div class="sim-card">
+  <h3>🔍 Visualizzatore Probabilità Condizionata</h3>
+  <p>Modifica le barre per impostare le probabilità e vedi in tempo reale come funziona la probabilità condizionata.</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+    <div>
+      <label style="font-weight:700;">P(A) = <span id="paVal">0.60</span></label>
+      <input type="range" min="1" max="99" value="60" oninput="updateCond()" id="slPA" style="width:100%;">
+    </div>
+    <div>
+      <label style="font-weight:700;">P(B|A) = <span id="pbaVal">0.70</span></label>
+      <input type="range" min="1" max="99" value="70" oninput="updateCond()" id="slPBA" style="width:100%;">
+    </div>
+    <div>
+      <label style="font-weight:700;">P(B|Ā) = <span id="pbnVal">0.20</span></label>
+      <input type="range" min="1" max="99" value="20" oninput="updateCond()" id="slPBN" style="width:100%;">
+    </div>
+  </div>
+  <canvas id="condCanvas" width="600" height="160" style="width:100%; border:2px solid #ddd; border-radius:8px; background:white;"></canvas>
+  <div class="sim-output" id="condOut" style="margin-top:0.8rem;"></div>
+</div>
+
+<!-- SIM 3 — CALCOLATORE BAYES -->
+<div class="sim-card">
+  <h3>🧮 Calcolatore Teorema di Bayes</h3>
+  <p>Inserisci i dati di un problema con <strong>due cause</strong> e calcola automaticamente le probabilità a posteriori.</p>
+  <div class="bayes-calc-grid">
+    <div class="bayes-field">
+      <label>P(Causa 1) — probabilità a priori</label>
+      <input type="number" id="bP1" value="0.30" min="0" max="1" step="0.01" oninput="calcBayes()">
+    </div>
+    <div class="bayes-field">
+      <label>P(Effetto | Causa 1)</label>
+      <input type="number" id="bPE1" value="0.95" min="0" max="1" step="0.01" oninput="calcBayes()">
+    </div>
+    <div class="bayes-field">
+      <label>P(Causa 2) = 1 − P(Causa 1)</label>
+      <input type="number" id="bP2" value="0.70" min="0" max="1" step="0.01" readonly style="background:#f0f0f0;">
+    </div>
+    <div class="bayes-field">
+      <label>P(Effetto | Causa 2)</label>
+      <input type="number" id="bPE2" value="0.02" min="0" max="1" step="0.01" oninput="calcBayes()">
+    </div>
+  </div>
+  <button class="sim-btn green" onclick="calcBayes()">📐 Calcola</button>
+  <div class="bayes-result" id="bayesResult">
+    <span style="font-weight:700; color:var(--purple);">Risultati appariranno qui</span>
+  </div>
+</div>
+
+</div><!-- end #simulatori -->
+</div><!-- end .content-area -->
+
+<script>
+// ===== TAB SWITCHING =====
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===== CHAPTER ACCORDION =====
+function toggleChapter(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+// ===== DSA MODE =====
+function toggleDSA() {
+  document.body.classList.toggle('dsa-mode');
+}
+
+// ===== EXERCISE TOGGLES =====
+function toggleEl(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('show');
+}
+
+// ===== SIMULATOR 1 — DADO/MONETA =====
+let simCounts = {};
+let simTotal = 0;
+let simFaces = 6;
+
+function simGetFaces() {
+  const t = document.getElementById('simType').value;
+  if (t === 'dado6') return 6;
+  if (t === 'dado12') return 12;
+  return 2; // moneta
+}
+
+function simGetLabels() {
+  const t = document.getElementById('simType').value;
+  if (t === 'moneta') return ['Testa','Croce'];
+  return null; // numerici
+}
+
+function simReset() {
+  simCounts = {};
+  simTotal = 0;
+  document.getElementById('simOut').textContent = 'Reset effettuato. Premi un pulsante per ricominciare.';
+  document.getElementById('simStatGrid').innerHTML = '';
+}
+
+function simLancia(n) {
+  const faces = simGetFaces();
+  const labels = simGetLabels();
+  const results = [];
+  for (let i = 0; i < n; i++) {
+    const r = Math.floor(Math.random() * faces);
+    const key = labels ? labels[r] : (r + 1).toString();
+    simCounts[key] = (simCounts[key] || 0) + 1;
+    simTotal++;
+    results.push(key);
+  }
+  // Update output
+  const last = n <= 10 ? 'Risultati: ' + results.join(', ') : `Ultimi 5: ${results.slice(-5).join(', ')} ... (${n} lanci)`;
+  document.getElementById('simOut').textContent = `Totale lanci: ${simTotal} | ${last}`;
+  // Update stats
+  const grid = document.getElementById('simStatGrid');
+  grid.innerHTML = '';
+  const pTeor = 1 / faces;
+  Object.keys(simCounts).sort().forEach(k => {
+    const freq = simCounts[k] / simTotal;
+    const cell = document.createElement('div');
+    cell.className = 'stat-cell';
+    cell.innerHTML = `<span class="val">${simCounts[k]}</span>
+      <div class="lbl">Faccia: <strong>${k}</strong></div>
+      <div class="lbl">Freq: ${(freq*100).toFixed(1)}%</div>
+      <div class="lbl" style="color:${Math.abs(freq-pTeor)<0.05?'green':'#e63946'}">Teorica: ${(pTeor*100).toFixed(1)}%</div>
+      <div class="progress-bar-wrap" style="margin-top:4px;">
+        <div class="progress-bar-fill" style="width:${freq*100}%; background:var(--blue);"></div>
+      </div>`;
+    grid.appendChild(cell);
+  });
+}
+
+// ===== SIMULATOR 2 — CONDITIONAL PROB =====
+function updateCond() {
+  const pA = document.getElementById('slPA').value / 100;
+  const pBA = document.getElementById('slPBA').value / 100;
+  const pBN = document.getElementById('slPBN').value / 100;
+  document.getElementById('paVal').textContent = pA.toFixed(2);
+  document.getElementById('pbaVal').textContent = pBA.toFixed(2);
+  document.getElementById('pbnVal').textContent = pBN.toFixed(2);
+
+  const pB = pA * pBA + (1 - pA) * pBN;
+  const pAinterB = pA * pBA;
+  const pAB = pAinterB / pB;
+
+  // Canvas
+  const canvas = document.getElementById('condCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  // Draw Venn-like bars
+  const barH = 30, y1 = 20, y2 = 70, y3 = 120;
+  // A region
+  ctx.fillStyle = '#e0f2ff'; ctx.fillRect(20, y1, (W-40)*pA, barH);
+  ctx.fillStyle = '#8338ec22'; ctx.fillRect(20, y1, (W-40)*pAinterB/1, barH); // P(A∩B) part
+  ctx.strokeStyle = '#118ab2'; ctx.lineWidth = 2;
+  ctx.strokeRect(20, y1, (W-40)*pA, barH);
+  ctx.fillStyle = '#333'; ctx.font = '12px Nunito'; ctx.textBaseline = 'top';
+  ctx.fillText('P(A) = ' + pA.toFixed(2), 25, y1+8);
+
+  // P(B) bar
+  ctx.fillStyle = '#e8f5e9';
+  ctx.fillRect(20, y2, (W-40)*pB, barH);
+  ctx.fillStyle = '#8338ec'; ctx.fillRect(20, y2, (W-40)*pAinterB, barH);
+  ctx.strokeStyle = '#06d6a0'; ctx.lineWidth = 2;
+  ctx.strokeRect(20, y2, (W-40)*pB, barH);
+  ctx.fillStyle = '#333';
+  ctx.fillText('P(B) = ' + pB.toFixed(3) + '  [viola = P(A∩B) = ' + pAinterB.toFixed(3) + ']', 25, y2+8);
+
+  // P(A|B) bar
+  ctx.fillStyle = '#f3e5ff';
+  ctx.fillRect(20, y3, (W-40)*pAB, barH);
+  ctx.strokeStyle = '#8338ec'; ctx.lineWidth = 2;
+  ctx.strokeRect(20, y3, (W-40), barH);
+  ctx.fillStyle = '#333';
+  ctx.fillText('P(A|B) = ' + pAB.toFixed(3) + '  [su base di riferimento = P(B)]', 25, y3+8);
+
+  document.getElementById('condOut').innerHTML =
+    `P(A) = ${pA.toFixed(3)} | P(B|A) = ${pBA.toFixed(3)} | P(B|Ā) = ${pBN.toFixed(3)}\n` +
+    `→ P(A∩B) = ${pAinterB.toFixed(4)} | P(B) = ${pB.toFixed(4)}\n` +
+    `→ P(A|B) = P(A∩B)/P(B) = ${pAB.toFixed(4)} = ${(pAB*100).toFixed(1)}%\n` +
+    (Math.abs(pBA - pAB) < 0.02 ? '✅ A e B sono quasi indipendenti!' : (pAB > pBA ? '📈 Sapere B aumenta la prob. di A' : '📉 Sapere B diminuisce la prob. di A'));
+}
+
+// ===== SIMULATOR 3 — BAYES CALC =====
+function calcBayes() {
+  const p1 = parseFloat(document.getElementById('bP1').value) || 0;
+  const pe1 = parseFloat(document.getElementById('bPE1').value) || 0;
+  const pe2 = parseFloat(document.getElementById('bPE2').value) || 0;
+  const p2 = 1 - p1;
+  document.getElementById('bP2').value = p2.toFixed(4);
+
+  if (p1 < 0 || p1 > 1 || pe1 < 0 || pe1 > 1 || pe2 < 0 || pe2 > 1) {
+    document.getElementById('bayesResult').innerHTML = '<span style="color:red">⚠️ I valori devono essere tra 0 e 1</span>';
+    return;
+  }
+
+  const pE = p1 * pe1 + p2 * pe2;
+  const post1 = pE > 0 ? (p1 * pe1) / pE : 0;
+  const post2 = pE > 0 ? (p2 * pe2) / pE : 0;
+
+  document.getElementById('bayesResult').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+      <div>
+        <div style="font-weight:700;color:var(--purple);">P(C₁|Effetto)</div>
+        <span class="big-num">${(post1*100).toFixed(1)}%</span>
+        <div style="font-size:0.85rem;color:#666;">P(C₁)·P(E|C₁) / P(E) = ${p1.toFixed(3)}×${pe1.toFixed(3)}/${pE.toFixed(4)}</div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${post1*100}%;">${(post1*100).toFixed(1)}%</div></div>
+      </div>
+      <div>
+        <div style="font-weight:700;color:var(--blue);">P(C₂|Effetto)</div>
+        <span class="big-num" style="color:var(--blue);">${(post2*100).toFixed(1)}%</span>
+        <div style="font-size:0.85rem;color:#666;">P(C₂)·P(E|C₂) / P(E) = ${p2.toFixed(3)}×${pe2.toFixed(3)}/${pE.toFixed(4)}</div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${post2*100}%;background:var(--blue);">${(post2*100).toFixed(1)}%</div></div>
+      </div>
+    </div>
+    <div style="font-size:0.9rem;color:#555;">
+      P(Effetto) = ${pE.toFixed(4)} &nbsp;|&nbsp; Somma posteriori = ${(post1+post2).toFixed(4)} ${Math.abs(post1+post2-1)<0.001?'✅':'⚠️'}
+    </div>`;
+}
+
+// Init
+updateCond();
+calcBayes();
+</script>
+</body>
+</html>

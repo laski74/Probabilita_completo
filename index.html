@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎲 Probabilità — Hub dei materiali</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;700;900&display=swap');
+
+:root {
+  --ink:    #1a1a2e;
+  --red:    #e63946;
+  --yellow: #ffd166;
+  --blue:   #118ab2;
+  --green:  #06d6a0;
+  --purple: #8338ec;
+  --orange: #fb5607;
+  --teal:   #0d7a9d;
+  --paper:  #fffbf0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--paper);
+  background-image: radial-gradient(circle, #ccc 1px, transparent 1px);
+  background-size: 28px 28px;
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── HEADER ── */
+.site-header {
+  width: 100%;
+  background: var(--yellow);
+  border-bottom: 4px solid var(--ink);
+  padding: 2rem 2rem 1.4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    45deg, transparent, transparent 10px,
+    rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px);
+}
+.site-header h1 {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(2.8rem, 8vw, 5.5rem);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-shadow: 4px 4px 0 var(--red), 8px 8px 0 rgba(0,0,0,0.15);
+  line-height: 1;
+  position: relative;
+}
+.site-header .subtitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--red);
+  margin-top: 0.5rem;
+  position: relative;
+  letter-spacing: 1px;
+}
+.dice { position: absolute; font-size: 3.5rem; opacity: 0.12; }
+.dice-1 { left: 2%; top: 10px; transform: rotate(-18deg); }
+.dice-2 { right: 2%; top: 8px; transform: rotate(22deg); }
+.dice-3 { left: 50%; top: 4px; transform: translateX(-50%) rotate(6deg); font-size: 2.2rem; }
+
+/* ── MAIN CONTAINER ── */
+.main-wrap { max-width: 940px; width: 100%; padding: 0 1rem; }
+
+/* ── INTRO BUBBLE ── */
+.intro-wrap { padding: 2rem 0 0.5rem; }
+.speech-bubble {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 20px;
+  padding: 1.3rem 1.8rem;
+  position: relative;
+  box-shadow: 5px 5px 0 var(--ink);
+  line-height: 1.7;
+  font-size: 1.02rem;
+}
+.speech-bubble::after {
+  content: '';
+  position: absolute; bottom: -20px; left: 40px;
+  width: 0; height: 0;
+  border-left: 18px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 20px solid var(--ink);
+}
+.speaker {
+  font-family: 'Bangers', cursive;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  color: var(--red);
+  margin-bottom: 0.4rem;
+}
+
+/* ── SECTION HEADER ── */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 2.5rem 0 1rem;
+}
+.section-header::before,
+.section-header::after {
+  content: '';
+  flex: 1;
+  height: 3px;
+  background: var(--ink);
+  border-radius: 2px;
+}
+.section-header .label {
+  font-family: 'Bangers', cursive;
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+  color: white;
+  background: var(--ink);
+  padding: 0.3rem 1.2rem;
+  border-radius: 30px;
+  white-space: nowrap;
+}
+
+/* ── CARDS GRID — CORSO COMPLETO (2 col) ── */
+.cards-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.8rem;
+}
+@media (max-width: 640px) {
+  .cards-2 { grid-template-columns: 1fr; }
+}
+
+/* ── VERSION CARD (grandi) ── */
+.version-card {
+  background: white;
+  border: 4px solid var(--ink);
+  border-radius: 18px;
+  box-shadow: 8px 8px 0 var(--ink);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.version-card:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: 12px 12px 0 var(--ink);
+}
+.card-banner {
+  padding: 1.1rem 1.4rem;
+  display: flex; align-items: center; gap: 0.9rem;
+}
+.card-banner.v1  { background: var(--blue); }
+.card-banner.v2  { background: var(--purple); }
+.card-version-label {
+  font-family: 'Bangers', cursive;
+  font-size: 2.6rem;
+  color: white;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.25);
+  flex-shrink: 0;
+}
+.card-title-block { display: flex; flex-direction: column; }
+.card-title {
+  font-family: 'Bangers', cursive;
+  font-size: 1.25rem;
+  color: rgba(255,255,255,0.93);
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+.card-body { padding: 1.3rem 1.4rem; flex: 1; display: flex; flex-direction: column; }
+.teaser { font-size: 1rem; line-height: 1.7; flex: 1; margin-bottom: 1rem; }
+.teaser .highlight { font-weight: 900; font-style: italic; }
+.teaser .hook {
+  display: block; margin-top: 0.6rem;
+  font-size: 0.92rem; color: #555;
+  border-left: 4px solid var(--yellow);
+  padding-left: 0.8rem; line-height: 1.6;
+}
+.tag-row { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.tag {
+  font-size: 0.73rem; font-weight: 700;
+  padding: 0.22rem 0.65rem;
+  border-radius: 20px; border: 2px solid var(--ink);
+}
+.tag-blue   { background: #d0eaf8; color: var(--blue); }
+.tag-purple { background: #ede3ff; color: var(--purple); }
+.tag-green  { background: #d4f7ee; color: #04855a; }
+.tag-orange { background: #fde8d8; color: var(--orange); }
+.tag-red    { background: #fde0e2; color: var(--red); }
+.tag-teal   { background: #d0eff8; color: var(--teal); }
+
+.cta-btn {
+  display: block; text-align: center;
+  font-family: 'Bangers', cursive;
+  font-size: 1.35rem; letter-spacing: 2px;
+  padding: 0.75rem;
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  text-decoration: none;
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: all 0.12s;
+}
+.cta-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink); filter: brightness(1.1); }
+.cta-btn.v1     { background: var(--blue); color: white; }
+.cta-btn.v2     { background: var(--purple); color: white; }
+.cta-btn.c-hub  { background: var(--ink); color: var(--yellow); }
+.cta-btn.c-eng  { background: #e63946; color: white; }
+.cta-btn.c-exp  { background: var(--teal); color: white; }
+.cta-btn.c-xpl  { background: #0d7a5e; color: white; }
+.cta-btn.c-ela  { background: var(--orange); color: white; }
+.cta-btn.c-eva  { background: var(--green); color: var(--ink); }
+
+/* ── 5E CARDS GRID ── */
+.cards-5e {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+}
+@media (max-width: 720px) { .cards-5e { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .cards-5e { grid-template-columns: 1fr; } }
+
+/* Hub card: spans full width */
+.hub-card-wrap { grid-column: 1 / -1; }
+
+.phase-card {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: 5px 5px 0 var(--ink);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform 0.13s, box-shadow 0.13s;
+}
+.phase-card:hover { transform: translate(-3px,-3px); box-shadow: 8px 8px 0 var(--ink); }
+
+.phase-banner {
+  padding: 0.75rem 1rem;
+  display: flex; align-items: center; gap: 0.7rem;
+}
+.phase-icon { font-size: 1.7rem; flex-shrink: 0; }
+.phase-name {
+  font-family: 'Bangers', cursive;
+  font-size: 1rem;
+  letter-spacing: 1.5px;
+  color: white;
+  line-height: 1.2;
+}
+.phase-body { padding: 0.9rem 1rem; flex: 1; display: flex; flex-direction: column; }
+.phase-desc { font-size: 0.9rem; line-height: 1.65; flex: 1; margin-bottom: 0.8rem; color: #333; }
+.phase-hook {
+  font-size: 0.83rem; font-style: italic; color: #666;
+  border-left: 3px solid var(--yellow);
+  padding-left: 0.6rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.55;
+}
+.cta-sm {
+  display: block; text-align: center;
+  font-family: 'Bangers', cursive;
+  font-size: 1.05rem; letter-spacing: 1.5px;
+  padding: 0.5rem;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  text-decoration: none;
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: all 0.12s;
+}
+.cta-sm:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
+.cta-sm.c-hub  { background: var(--ink); color: var(--yellow); }
+.cta-sm.c-eng  { background: #e63946; color: white; }
+.cta-sm.c-exp  { background: var(--teal); color: white; }
+.cta-sm.c-xpl  { background: #0d7a5e; color: white; }
+.cta-sm.c-ela  { background: var(--orange); color: white; }
+.cta-sm.c-eva  { background: var(--green); color: var(--ink); }
+
+/* ── HUB CARD (orizzontale) ── */
+.hub-card {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: 5px 5px 0 var(--ink);
+  overflow: hidden;
+  display: flex;
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform 0.13s, box-shadow 0.13s;
+}
+.hub-card:hover { transform: translate(-3px,-3px); box-shadow: 8px 8px 0 var(--ink); }
+.hub-banner {
+  background: var(--ink);
+  color: var(--yellow);
+  padding: 1rem 1.2rem;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-width: 110px; gap: 0.3rem;
+  flex-shrink: 0;
+}
+.hub-banner .hub-icon { font-size: 2.2rem; }
+.hub-banner .hub-label {
+  font-family: 'Bangers', cursive;
+  font-size: 1rem; letter-spacing: 1.5px;
+  color: var(--yellow); text-align: center;
+}
+.hub-body {
+  padding: 1rem 1.3rem;
+  display: flex; flex-direction: column; justify-content: center; flex: 1;
+}
+.hub-body .hub-title {
+  font-family: 'Bangers', cursive;
+  font-size: 1.35rem; letter-spacing: 1px;
+  margin-bottom: 0.4rem;
+}
+.hub-body .hub-desc { font-size: 0.9rem; line-height: 1.6; color: #444; }
+.hub-dots {
+  display: flex; gap: 0.4rem; margin-top: 0.7rem;
+}
+.hub-dot {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  font-size: 0.65rem; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── FOOTER ── */
+footer {
+  width: 100%;
+  text-align: center;
+  padding: 1.2rem;
+  font-size: 0.85rem;
+  color: #888;
+  border-top: 2px dashed #ccc;
+  margin-top: 2rem;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <span class="dice dice-1">🎲</span>
+  <span class="dice dice-2">🎲</span>
+  <span class="dice dice-3">🎯</span>
+  <h1>🎲 Probabilità</h1>
+  <div class="subtitle">Hub dei materiali didattici &mdash; Istituto Tecnico · 4ª/5ª</div>
+</header>
+
+<div class="main-wrap">
+
+  <!-- INTRO BUBBLE -->
+  <div class="intro-wrap">
+    <div class="speech-bubble">
+      <div class="speaker">🧑‍🏫 Prof. Lasky:</div>
+      <p>La probabilità è l'unica branca della matematica dove <strong>la risposta giusta può sembrare completamente sbagliata</strong>. Trovi qui tutti i materiali del corso: due versioni del corso completo e il percorso 5E dedicato alla probabilità condizionata e al teorema di Bayes. Scegli da dove partire!</p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       SEZIONE 1 — CORSO COMPLETO
+       ════════════════════════════════════ -->
+  <div class="section-header">
+    <div class="label">📚 CORSO COMPLETO DI PROBABILITÀ</div>
+  </div>
+
+  <div class="cards-2">
+
+    <!-- V1 -->
+    <a class="version-card" href="probabilita_corso_completo_STEP.html">
+      <div class="card-banner v1">
+        <div class="card-version-label">V1</div>
+        <div class="card-title-block">
+          <div class="card-title">Corso Completo<br>con Simulatori</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="teaser">
+          <span class="highlight">Sapresti rispondere a questa domanda?</span><br>
+          Se il test per una malattia rara è accurato al 94% e il tuo risultato è positivo, qual è la probabilità che tu sia davvero malato?
+          <span class="hook">La risposta non è 94%. Non è nemmeno vicina. E capire perché cambia il modo in cui leggi i giornali, prendi decisioni, valuti rischi. Questo corso ti porta là.</span>
+        </div>
+        <div class="tag-row">
+          <span class="tag tag-blue">📚 Teoria dialogata</span>
+          <span class="tag tag-green">🎮 3 Simulatori</span>
+          <span class="tag tag-orange">✏️ 12 Esercizi</span>
+          <span class="tag tag-purple">⭐ Bayes</span>
+          <span class="tag tag-red">🅰️ DSA</span>
+        </div>
+        <div class="cta-btn v1">▶ APRI VERSIONE 1</div>
+      </div>
+    </a>
+
+    <!-- V2 -->
+    <a class="version-card" href="probabilita_corso_completo2_STEP.html">
+      <div class="card-banner v2">
+        <div class="card-version-label">V2</div>
+        <div class="card-title-block">
+          <div class="card-title">Corso Completo<br>Edizione Potenziata</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="teaser">
+          <span class="highlight">Quanto sei sicuro di capire il caso?</span><br>
+          La Bella Addormentata lancia una moneta, poi le cancellano la memoria. Quando si sveglia, qual è la probabilità che sia uscita testa: ½ o ⅔?
+          <span class="hook">Matematici e filosofi litigano ancora. Esplorare la probabilità significa imparare a ragionare dove l'intuizione tradisce — con diagrammi, formule e paradossi.</span>
+        </div>
+        <div class="tag-row">
+          <span class="tag tag-purple">🔬 Approccio IbL</span>
+          <span class="tag tag-blue">🌳 Alberi prob.</span>
+          <span class="tag tag-green">🧮 Calc. Bayes</span>
+          <span class="tag tag-orange">🎯 Paradossi</span>
+          <span class="tag tag-red">🅰️ DSA</span>
+        </div>
+        <div class="cta-btn v2">▶ APRI VERSIONE 2</div>
+      </div>
+    </a>
+
+  </div><!-- end cards-2 -->
+
+  <!-- ════════════════════════════════════
+       SEZIONE 2 — PERCORSO 5E
+       ════════════════════════════════════ -->
+  <div class="section-header">
+    <div class="label">🧪 PERCORSO 5E — BAYES &amp; PROB. CONDIZIONATA (5ª)</div>
+  </div>
+
+  <a class="hub-card" href="../../probabilità/bayes-5e/index.html">
+    <div class="hub-banner">
+      <span class="hub-icon">🗺️</span>
+      <span class="hub-label">INDICE<br>5E</span>
+    </div>
+    <div class="hub-body">
+      <div class="hub-title">🎲 Probabilità Condizionata &amp; Teorema di Bayes — Percorso 5E</div>
+      <div class="hub-desc">Un percorso in 5 fasi (Engage → Explore → Explain → Elaborate → Evaluate) sulla probabilità condizionata e il teorema di Bayes. Parti dal paradosso di Monty Hall e arriva al quiz finale. L'indice del percorso contiene tutti i link alle singole attività.</div>
+      <div class="hub-dots">
+        <div class="hub-dot" style="background:#e63946; color:white;" title="Engage">E</div>
+        <div class="hub-dot" style="background:#0d7a9d; color:white;" title="Explore">E</div>
+        <div class="hub-dot" style="background:#0d7a5e; color:white;" title="Explain">E</div>
+        <div class="hub-dot" style="background:#fb5607; color:white;" title="Elaborate">E</div>
+        <div class="hub-dot" style="background:#06d6a0; color:#1a1a2e;" title="Evaluate">E</div>
+        <span style="font-size:0.8rem; color:#888; margin-left:0.4rem; align-self:center;">— segui il percorso in ordine dall'indice</span>
+      </div>
+    </div>
+  </a>
+
+  <div style="height:1rem;"></div>
+</div><!-- end main-wrap -->
+
+<footer>
+  🎲 Probabilità — Istituto Tecnico &middot; Classi 4ª/5ª &middot; Prof. Lasky &nbsp;·&nbsp;
+  <span style="font-style:italic;">Matematica applicata all'informatica e alla meccanica</span>
+</footer>
+
+</body>
+</html>
